@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
-import SurahList from '../components/SurahList';
+import SurahList from '../../components/SurahList';
 
 export default function Home() {
   return (
