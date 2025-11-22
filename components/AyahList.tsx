@@ -27,7 +27,7 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
   const [surah, setSurah] = useState<SurahDetail | null>(null);
   const [translation, setTranslation] = useState<TranslationDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const { language } = useSettings();
+  const { language, themeColor } = useSettings();
 
   useEffect(() => {
     const loadData = async () => {
@@ -60,7 +60,7 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
   }, [surahIndex, language]);
 
   if (loading) {
-    return <ActivityIndicator style={styles.loader} size="large" color="#004d40" />;
+    return <ActivityIndicator style={styles.loader} size="large" color={themeColor} />;
   }
 
   if (!surah) {
@@ -80,8 +80,8 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
       renderItem={({ item, index }) => (
         <View style={styles.item}>
           <View style={styles.header}>
-             <View style={styles.numberBadge}>
-               <Text style={styles.number}>{index + 1}</Text>
+             <View style={[styles.numberBadge, { backgroundColor: themeColor + '20' }]}>
+               <Text style={[styles.number, { color: themeColor }]}>{index + 1}</Text>
              </View>
           </View>
           <Text style={styles.arabic}>{item.text}</Text>
@@ -123,14 +123,12 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#e0f2f1',
     justifyContent: 'center',
     alignItems: 'center',
   },
   number: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#00695c',
   },
   arabic: {
     fontSize: 24,
