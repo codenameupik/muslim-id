@@ -1,0 +1,118 @@
+export const translations = {
+  en: {
+    tabs: {
+      home: 'Home',
+      quran: 'Al-Quran',
+      search: 'Search',
+      prayer: 'Prayer Times',
+      settings: 'Settings',
+    },
+    home: {
+      greeting: "Assalamu'alaikum",
+      searchPlaceholder: 'Search Surah, Juz, or Dua...',
+      now: 'Now',
+      next: 'Next',
+      nextPrayer: 'Next Prayer',
+      in: 'in',
+      calendar: 'Islamic Calendar',
+      qibla: 'Qibla Direction',
+      dua: 'Dua & Dhikr',
+    },
+    settings: {
+      title: 'Settings',
+      appLanguage: 'App Language',
+      translation: 'Translation',
+      themeColor: 'Theme Color',
+      textSize: 'Text Size',
+      arabicText: 'Arabic Text',
+      translationText: 'Translation Text',
+      preview: 'Preview',
+      credits: 'Credits',
+      none: 'None',
+      english: 'English',
+      indonesia: 'Indonesia',
+      bahasaIndonesia: 'Bahasa Indonesia',
+    },
+    search: {
+      placeholder: 'Search Surah, Juz, or Dua...',
+      surah: 'Surah',
+      juz: 'Juz',
+      dua: 'Dua & Dhikr',
+      noResults: 'No results found',
+    },
+    dua: {
+      title: 'Dua & Dhikr',
+      morning: 'Morning Dhikr',
+      evening: 'Evening Dhikr',
+      selected: 'Selected Dua',
+    },
+    qibla: {
+      title: 'Qibla Direction',
+    },
+    calendar: {
+      title: 'Islamic Calendar',
+    },
+    common: {
+      loading: 'Loading...',
+      error: 'Error',
+    }
+  },
+  id: {
+    tabs: {
+      home: 'Beranda',
+      quran: 'Al-Quran',
+      search: 'Cari',
+      prayer: 'Waktu Sholat',
+      settings: 'Pengaturan',
+    },
+    home: {
+      greeting: "Assalamu'alaikum",
+      searchPlaceholder: 'Cari Surah, Juz, atau Doa...',
+      now: 'Sekarang',
+      next: 'Berikutnya',
+      nextPrayer: 'Sholat Berikutnya',
+      in: 'dalam',
+      calendar: 'Kalender Hijriah',
+      qibla: 'Arah Kiblat',
+      dua: 'Doa & Dzikir',
+    },
+    settings: {
+      title: 'Pengaturan',
+      appLanguage: 'Bahasa Aplikasi',
+      translation: 'Terjemahan',
+      themeColor: 'Warna Tema',
+      textSize: 'Ukuran Teks',
+      arabicText: 'Teks Arab',
+      translationText: 'Teks Terjemahan',
+      preview: 'Pratinjau',
+      credits: 'Kredit',
+      none: 'Tidak Ada',
+      english: 'Inggris',
+      indonesia: 'Indonesia',
+      bahasaIndonesia: 'Bahasa Indonesia',
+    },
+    search: {
+      placeholder: 'Cari Surah, Juz, atau Doa...',
+      surah: 'Surah',
+      juz: 'Juz',
+      dua: 'Doa & Dzikir',
+      noResults: 'Tidak ada hasil',
+    },
+    dua: {
+      title: 'Doa & Dzikir',
+      morning: 'Dzikir Pagi',
+      evening: 'Dzikir Petang',
+      selected: 'Doa Pilihan',
+    },
+    qibla: {
+      title: 'Arah Kiblat',
+    },
+    calendar: {
+      title: 'Kalender Hijriah',
+    },
+    common: {
+      loading: 'Memuat...',
+      error: 'Kesalahan',
+    }
+  }
+};

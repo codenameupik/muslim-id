@@ -5,8 +5,11 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useSettings } from '../context/SettingsContext';
 import { usePrayerTimes } from '../hooks/usePrayerTimes';
 
-export default function QiblaScreen() {
-  const { themeColor } = useSettings();
+import { translations } from '../constants/i18n';
+
+export default function QiblaCompass() {
+  const { themeColor, theme, appLanguage } = useSettings();
+  const t = translations[appLanguage];
   const { coordinates, loading: locationLoading, errorMsg: locationError } = usePrayerTimes();
   const [qiblaDirection, setQiblaDirection] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,8 +45,8 @@ export default function QiblaScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: 'Qibla Direction' }} />
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Stack.Screen options={{ title: t.qibla.title }} />
       
       {loading || locationLoading ? (
         <View style={styles.centerContent}>

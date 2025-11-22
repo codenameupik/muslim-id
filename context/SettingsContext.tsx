@@ -14,6 +14,8 @@ interface Theme {
 }
 
 interface SettingsContextType {
+  appLanguage: 'en' | 'id';
+  setAppLanguage: (lang: 'en' | 'id') => Promise<void>;
   language: Language;
   setLanguage: (lang: Language) => Promise<void>;
   themeColor: ThemeColor;
@@ -44,9 +46,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     border: isDark ? '#333333' : '#eeeeee',
   };
 
+  const [appLanguage, setAppLanguageState] = useState<'en' | 'id'>('en');
+
   useEffect(() => {
     const loadSettings = async () => {
       try {
+        const storedAppLang = await AsyncStorage.getItem('appLanguage');
+        if (storedAppLang) {
+          setAppLanguageState(storedAppLang as 'en' | 'id');
+        }
         const storedLang = await AsyncStorage.getItem('translationLanguage');
         if (storedLang) {
           setLanguageState(storedLang as Language);
@@ -69,6 +77,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
     loadSettings();
   }, []);
+
+  const setAppLanguage = async (lang: 'en' | 'id') => {
+    try {
+      setAppLanguageState(lang);
+      await AsyncStorage.setItem('appLanguage', lang);
+    } catch (error) {
+      console.error('Failed to save app language', error);
+    }
+  };
 
   const setLanguage = async (lang: Language) => {
     try {
@@ -112,6 +129,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   return (
     <SettingsContext.Provider value={{ 
+      appLanguage,
+      setAppLanguage,
       language, 
       setLanguage, 
       themeColor, 

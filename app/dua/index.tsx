@@ -4,22 +4,25 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSettings } from '../../context/SettingsContext';
 
-const CATEGORIES = [
-  { id: 'morning-dhikr', title: 'Morning Dhikr', icon: 'sunny-outline' },
-  { id: 'evening-dhikr', title: 'Evening Dhikr', icon: 'moon-outline' },
-  { id: 'selected-dua', title: 'Selected Dua', icon: 'book-outline' },
-];
+import { translations } from '../../constants/i18n';
 
 export default function DuaCategories() {
-  const { themeColor, theme } = useSettings();
+  const { themeColor, theme, appLanguage } = useSettings();
   const router = useRouter();
+  const t = translations[appLanguage];
+
+  const categories = [
+    { id: 'morning-dhikr', title: t.dua.morning, icon: 'sunny-outline' },
+    { id: 'evening-dhikr', title: t.dua.evening, icon: 'moon-outline' },
+    { id: 'selected-dua', title: t.dua.selected, icon: 'book-outline' },
+  ];
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Stack.Screen options={{ title: 'Dua & Dhikr' }} />
+      <Stack.Screen options={{ title: t.dua.title }} />
       
       <View style={styles.list}>
-        {CATEGORIES.map((category) => (
+        {categories.map((category) => (
           <TouchableOpacity
             key={category.id}
             style={[styles.card, { backgroundColor: theme.card }]}

@@ -2,6 +2,8 @@ import React from 'react';
 import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSettings } from '../../context/SettingsContext';
 
+import { translations } from '../../constants/i18n';
+
 const THEME_COLORS = [
   { name: 'Teal', value: '#00695c' },
   { name: 'Blue', value: '#1976D2' },
@@ -11,6 +13,8 @@ const THEME_COLORS = [
 
 export default function SettingsScreen() {
   const { 
+    appLanguage,
+    setAppLanguage,
     language, 
     setLanguage, 
     themeColor, 
@@ -18,8 +22,11 @@ export default function SettingsScreen() {
     arabicFontSize,
     setArabicFontSize,
     translationFontSize,
-    setTranslationFontSize
+    setTranslationFontSize,
+    theme
   } = useSettings();
+
+  const t = translations[appLanguage];
 
   const handleLanguageSelect = (lang: 'en' | 'id' | null) => {
     setLanguage(lang);
@@ -30,34 +37,52 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Translation</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.settings.appLanguage}</Text>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={[styles.languageButton, appLanguage === 'en' && { backgroundColor: themeColor }]}
+            onPress={() => setAppLanguage('en')}
+          >
+            <Text style={[styles.languageButtonText, appLanguage === 'en' && { color: '#fff' }, { color: theme.text }]}>{t.settings.english}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.languageButton, appLanguage === 'id' && { backgroundColor: themeColor }]}
+            onPress={() => setAppLanguage('id')}
+          >
+            <Text style={[styles.languageButtonText, appLanguage === 'id' && { color: '#fff' }, { color: theme.text }]}>{t.settings.indonesia}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.settings.translation}</Text>
         
         <TouchableOpacity
           style={[styles.option, language === 'en' && { backgroundColor: themeColor + '20' }]}
           onPress={() => handleLanguageSelect('en')}
         >
-          <Text style={[styles.optionText, language === 'en' && { color: themeColor, fontWeight: 'bold' }]}>English</Text>
+          <Text style={[styles.optionText, language === 'en' && { color: themeColor, fontWeight: 'bold' }, { color: theme.text }]}>{t.settings.english}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.option, language === 'id' && { backgroundColor: themeColor + '20' }]}
           onPress={() => handleLanguageSelect('id')}
         >
-          <Text style={[styles.optionText, language === 'id' && { color: themeColor, fontWeight: 'bold' }]}>Bahasa Indonesia</Text>
+          <Text style={[styles.optionText, language === 'id' && { color: themeColor, fontWeight: 'bold' }, { color: theme.text }]}>{t.settings.bahasaIndonesia}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.option, language === null && { backgroundColor: themeColor + '20' }]}
           onPress={() => handleLanguageSelect(null)}
         >
-          <Text style={[styles.optionText, language === null && { color: themeColor, fontWeight: 'bold' }]}>None</Text>
+          <Text style={[styles.optionText, language === null && { color: themeColor, fontWeight: 'bold' }, { color: theme.text }]}>{t.settings.none}</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Theme Color</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.settings.themeColor}</Text>
         <View style={styles.colorContainer}>
           {THEME_COLORS.map((color) => (
             <TouchableOpacity
@@ -74,10 +99,10 @@ export default function SettingsScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Text Size</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.settings.textSize}</Text>
         
         <View style={styles.sizeControl}>
-          <Text style={styles.sizeLabel}>Arabic Text</Text>
+          <Text style={[styles.sizeLabel, { color: theme.text }]}>{t.settings.arabicText}</Text>
           <View style={styles.sizeButtons}>
             <TouchableOpacity 
               style={[styles.sizeButton, { borderColor: themeColor }]} 
@@ -85,7 +110,7 @@ export default function SettingsScreen() {
             >
               <Text style={[styles.sizeButtonText, { color: themeColor }]}>-</Text>
             </TouchableOpacity>
-            <Text style={styles.sizeValue}>{arabicFontSize}</Text>
+            <Text style={[styles.sizeValue, { color: theme.text }]}>{arabicFontSize}</Text>
             <TouchableOpacity 
               style={[styles.sizeButton, { borderColor: themeColor }]} 
               onPress={() => setArabicFontSize(Math.min(40, arabicFontSize + 2))}
@@ -96,7 +121,7 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.sizeControl}>
-          <Text style={styles.sizeLabel}>Translation Text</Text>
+          <Text style={[styles.sizeLabel, { color: theme.text }]}>{t.settings.translationText}</Text>
           <View style={styles.sizeButtons}>
             <TouchableOpacity 
               style={[styles.sizeButton, { borderColor: themeColor }]} 
@@ -104,7 +129,7 @@ export default function SettingsScreen() {
             >
               <Text style={[styles.sizeButtonText, { color: themeColor }]}>-</Text>
             </TouchableOpacity>
-            <Text style={styles.sizeValue}>{translationFontSize}</Text>
+            <Text style={[styles.sizeValue, { color: theme.text }]}>{translationFontSize}</Text>
             <TouchableOpacity 
               style={[styles.sizeButton, { borderColor: themeColor }]} 
               onPress={() => setTranslationFontSize(Math.min(30, translationFontSize + 2))}
@@ -114,12 +139,12 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <View style={styles.previewContainer}>
-          <Text style={styles.previewLabel}>Preview</Text>
+        <View style={[styles.previewContainer, { backgroundColor: theme.card, borderColor: theme.border }]}>
+          <Text style={[styles.previewLabel, { color: theme.textSecondary }]}>{t.settings.preview}</Text>
           <View style={styles.previewBox}>
-            <Text style={[styles.arabicPreview, { fontSize: arabicFontSize }]}>بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</Text>
+            <Text style={[styles.arabicPreview, { fontSize: arabicFontSize, color: theme.text }]}>بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</Text>
             {language && (
-              <Text style={[styles.translationPreview, { fontSize: translationFontSize }]}>
+              <Text style={[styles.translationPreview, { fontSize: translationFontSize, color: theme.textSecondary }]}>
                 {language === 'id' ? 'Dengan nama Allah Yang Maha Pengasih, Maha Penyayang.' : 'In the name of Allah, the Entirely Merciful, the Especially Merciful.'}
               </Text>
             )}
@@ -128,7 +153,7 @@ export default function SettingsScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Credits</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.settings.credits}</Text>
         <TouchableOpacity onPress={() => Linking.openURL('https://github.com/semarketir/quranjson')}>
           <Text style={styles.creditLink}>Quran Data: semarketir/quranjson</Text>
         </TouchableOpacity>
@@ -154,6 +179,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 15,
     color: '#333',
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  languageButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#eee',
+    alignItems: 'center',
+  },
+  languageButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   option: {
     padding: 15,

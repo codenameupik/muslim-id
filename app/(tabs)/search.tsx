@@ -13,6 +13,8 @@ import selectedEn from '../../assets/dua/selected-dua/en.json';
 import selectedId from '../../assets/dua/selected-dua/id.json';
 import surahData from '../../assets/quran/surah.json';
 
+import { translations } from '../../constants/i18n';
+
 interface SearchResult {
   id: string;
   title: string;
@@ -22,9 +24,10 @@ interface SearchResult {
 }
 
 export default function SearchScreen() {
-  const { themeColor, theme, language } = useSettings();
+  const { themeColor, theme, language, appLanguage } = useSettings();
   const router = useRouter();
   const [query, setQuery] = useState('');
+  const t = translations[appLanguage];
 
   const results = useMemo(() => {
     if (!query || query.length < 2) return [];
@@ -48,7 +51,7 @@ export default function SearchScreen() {
       }));
 
     if (surahResults.length > 0) {
-      sections.push({ title: 'Surah', data: surahResults });
+      sections.push({ title: t.search.surah, data: surahResults });
     }
 
     // Search Juz
@@ -57,7 +60,7 @@ export default function SearchScreen() {
       if (`juz ${i}`.includes(lowerQuery) || i.toString() === query) {
         juzResults.push({
           id: `juz-${i}`,
-          title: `Juz ${i}`,
+          title: `${t.search.juz} ${i}`,
           type: 'juz',
           data: { id: i }
         });
@@ -65,7 +68,7 @@ export default function SearchScreen() {
     }
 
     if (juzResults.length > 0) {
-      sections.push({ title: 'Juz', data: juzResults });
+      sections.push({ title: t.search.juz, data: juzResults });
     }
 
     // Search Duas
@@ -93,11 +96,11 @@ export default function SearchScreen() {
       }));
 
     if (duaResults.length > 0) {
-      sections.push({ title: 'Dua & Dhikr', data: duaResults });
+      sections.push({ title: t.search.dua, data: duaResults });
     }
 
     return sections;
-  }, [query, language]);
+  }, [query, language, t]);
 
   const handlePress = (item: SearchResult) => {
     if (item.type === 'surah') {
@@ -115,7 +118,7 @@ export default function SearchScreen() {
         <Ionicons name="search" size={20} color={theme.textSecondary} style={styles.searchIcon} />
         <TextInput
           style={[styles.input, { color: theme.text }]}
-          placeholder="Search Surah, Juz, or Dua..."
+          placeholder={t.search.placeholder}
           placeholderTextColor={theme.textSecondary}
           value={query}
           onChangeText={setQuery}
@@ -157,7 +160,7 @@ export default function SearchScreen() {
           query.length >= 2 ? (
             <View style={styles.emptyContainer}>
               <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
-                No results found
+                {t.search.noResults}
               </Text>
             </View>
           ) : null

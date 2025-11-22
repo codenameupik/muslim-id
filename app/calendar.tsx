@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSettings } from '../context/SettingsContext';
 
+import { translations } from '../constants/i18n';
+
 interface CalendarDay {
   gregorian: {
     date: string;
@@ -24,10 +26,11 @@ interface CalendarDay {
 }
 
 export default function CalendarScreen() {
-  const { themeColor } = useSettings();
+  const { themeColor, appLanguage } = useSettings();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarData, setCalendarData] = useState<CalendarDay[]>([]);
   const [loading, setLoading] = useState(true);
+  const t = translations[appLanguage];
 
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -88,7 +91,7 @@ export default function CalendarScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: 'Islamic Calendar' }} />
+      <Stack.Screen options={{ title: t.calendar.title }} />
       
       <View style={[styles.header, { backgroundColor: themeColor }]}>
         <TouchableOpacity onPress={() => changeMonth(-1)}>

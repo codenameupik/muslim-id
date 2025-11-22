@@ -5,10 +5,13 @@ import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, Toucha
 import { useSettings } from '../../context/SettingsContext';
 import { usePrayerTimes } from '../../hooks/usePrayerTimes';
 
+import { translations } from '../../constants/i18n';
+
 export default function Home() {
-  const { themeColor } = useSettings();
+  const { themeColor, appLanguage } = useSettings();
   const router = useRouter();
   const { prayerTimes, loading, errorMsg, city, refreshing, refresh } = usePrayerTimes();
+  const t = translations[appLanguage];
   const [prayerState, setPrayerState] = useState<{
     current: { name: string; time: string } | null;
     next: { name: string; time: string; diff: number } | null;
@@ -93,10 +96,10 @@ export default function Home() {
           onPress={() => router.push('/search')}
         >
           <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
-          <Text style={styles.searchText}>Search Surah, Juz, or Dua...</Text>
+          <Text style={styles.searchText}>{t.home.searchPlaceholder}</Text>
         </TouchableOpacity>
 
-        <Text style={styles.greeting}>Assalamu&apos;alaikum</Text>
+        <Text style={styles.greeting}>{t.home.greeting}</Text>
         <Text style={styles.location}><Ionicons name="location" size={16} color="#fff" /> {city}</Text>
       </View>
 
@@ -109,7 +112,7 @@ export default function Home() {
           <View style={styles.prayerCard}>
             <View style={styles.prayerRow}>
               <View style={styles.prayerColumn}>
-                <Text style={styles.prayerLabel}>Now</Text>
+                <Text style={styles.prayerLabel}>{t.home.now}</Text>
                 <Text style={[styles.prayerName, { color: themeColor }]}>{prayerState.current.name}</Text>
                 <Text style={styles.prayerTime}>{prayerState.current.time}</Text>
               </View>
@@ -117,7 +120,7 @@ export default function Home() {
               <View style={styles.divider} />
 
               <View style={styles.prayerColumn}>
-                <Text style={styles.prayerLabel}>Next</Text>
+                <Text style={styles.prayerLabel}>{t.home.next}</Text>
                 <Text style={[styles.prayerName, { color: themeColor }]}>{prayerState.next.name}</Text>
                 <Text style={styles.prayerTime}>{prayerState.next.time}</Text>
                 <View style={[styles.countdownBadge, { backgroundColor: themeColor }]}>
@@ -135,7 +138,7 @@ export default function Home() {
           onPress={() => router.push('/calendar')}
         >
           <Ionicons name="calendar" size={24} color="#fff" />
-          <Text style={styles.menuButtonText}>Islamic Calendar</Text>
+          <Text style={styles.menuButtonText}>{t.home.calendar}</Text>
           <Ionicons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
 
@@ -144,7 +147,7 @@ export default function Home() {
           onPress={() => router.push('/qibla')}
         >
           <Ionicons name="compass" size={24} color="#fff" />
-          <Text style={styles.menuButtonText}>Qibla Direction</Text>
+          <Text style={styles.menuButtonText}>{t.home.qibla}</Text>
           <Ionicons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
 
@@ -153,7 +156,7 @@ export default function Home() {
           onPress={() => router.push('/dua')}
         >
           <Ionicons name="book" size={24} color="#fff" />
-          <Text style={styles.menuButtonText}>Dua & Dhikr</Text>
+          <Text style={styles.menuButtonText}>{t.home.dua}</Text>
           <Ionicons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
