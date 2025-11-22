@@ -88,6 +88,14 @@ export default function Home() {
       <Stack.Screen options={{ title: 'Muslim ID' }} />
       
       <View style={[styles.header, { backgroundColor: themeColor }]}>
+        <TouchableOpacity 
+          style={styles.searchBar} 
+          onPress={() => router.push('/search')}
+        >
+          <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+          <Text style={styles.searchText}>Search Surah, Juz, or Dua...</Text>
+        </TouchableOpacity>
+
         <Text style={styles.greeting}>Assalamu&apos;alaikum</Text>
         <Text style={styles.location}><Ionicons name="location" size={16} color="#fff" /> {city}</Text>
       </View>
@@ -167,6 +175,23 @@ const styles = StyleSheet.create({
     paddingBottom: 60,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 25,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginBottom: 20,
+    marginTop: 30, // Added top margin for spacing from status bar
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchText: {
+    color: '#999',
+    fontSize: 14,
   },
   greeting: {
     fontSize: 24,
