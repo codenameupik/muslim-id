@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { FlatList, LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
+import { FlatList, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
+import juzInfo from '../assets/quran/juz.json';
 import surahData from '../assets/quran/surah.json';
 import { useSettings } from '../context/SettingsContext';
 
@@ -19,38 +20,27 @@ interface Surah {
   juz: { index: string }[];
 }
 
-
+interface JuzInfo {
+  index: string;
+  start: { index: string; verse: string; name: string };
+  end: { index: string; verse: string; name: string };
+}
 
 const SurahList = () => {
+  // Theme color from settings
   const { themeColor } = useSettings();
   const [viewMode, setViewMode] = useState<'surah' | 'juz'>('surah');
-  const [expandedJuz, setExpandedJuz] = useState<number | null>(null);
+
 
   const juzData = useMemo(() => {
-    const map = new Map<number, Surah[]>();
-    for (let i = 1; i <= 30; i++) {
-      map.set(i, []);
-    }
-
-    surahData.forEach((surah: any) => {
-      surah.juz.forEach((j: any) => {
-        const juzNum = parseInt(j.index, 10);
-        if (map.has(juzNum)) {
-          map.get(juzNum)?.push(surah);
-        }
-      });
+    return juzInfo.map((juz: JuzInfo) => {
+      // We don't strictly need to filter surahs anymore if we are just linking to the Juz view,
+      // but keeping it doesn't hurt if we want to display count or something later.
+      // Actually, renderJuzItem doesn't use item.surahs anymore.
+      // So we can simplify this.
+      return juz;
     });
-
-    return Array.from(map.entries()).map(([id, surahs]) => ({
-      id,
-      surahs,
-    }));
   }, []);
-
-  const toggleJuz = (id: number) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpandedJuz(expandedJuz === id ? null : id);
-  };
 
   const renderSurahItem = ({ item }: { item: Surah }) => (
     <Link href={`/surah/${item.index}`} asChild>
@@ -67,27 +57,19 @@ const SurahList = () => {
     </Link>
   );
 
-  const renderJuzItem = ({ item }: { item: { id: number; surahs: Surah[] } }) => {
-    const isExpanded = expandedJuz === item.id;
+  const renderJuzItem = ({ item }: { item: JuzInfo }) => {
     return (
-      <View style={styles.juzContainer}>
-        <TouchableOpacity 
-          style={[styles.juzHeader, isExpanded && { backgroundColor: themeColor + '10' }]} 
-          onPress={() => toggleJuz(item.id)}
-        >
-          <Text style={[styles.juzTitle, { color: themeColor }]}>Juz {item.id}</Text>
-          <Ionicons name={isExpanded ? "chevron-up" : "chevron-down"} size={20} color={themeColor} />
-        </TouchableOpacity>
-        {isExpanded && (
-          <View>
-            {item.surahs.map((surah) => (
-              <View key={surah.index}>
-                 {renderSurahItem({ item: surah })}
-              </View>
-            ))}
+      <Link href={`/juz/${parseInt(item.index, 10)}`} asChild>
+        <TouchableOpacity style={styles.juzContainer}>
+          <View style={styles.juzInfo}>
+            <Text style={[styles.juzTitle, { color: themeColor }]}>Juz {parseInt(item.index, 10)}</Text>
+            <Text style={styles.juzSubtitle}>
+              {item.start.name} {item.start.verse.replace('verse_', '')} - {item.end.name} {item.end.verse.replace('verse_', '')}
+            </Text>
           </View>
-        )}
-      </View>
+          <Ionicons name="chevron-forward" size={20} color={themeColor} />
+        </TouchableOpacity>
+      </Link>
     );
   };
 
@@ -117,7 +99,7 @@ const SurahList = () => {
       ) : (
         <FlatList
           data={juzData}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.index}
           renderItem={renderJuzItem}
         />
       )}
@@ -184,20 +166,26 @@ const styles = StyleSheet.create({
     fontFamily: 'System',
   },
   juzContainer: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  juzHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  juzInfo: {
+    flex: 1,
   },
   juzTitle: {
     fontSize: 18,
     fontWeight: 'bold',
   },
+  juzSubtitle: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
+  },
+
 });
 
 export default SurahList;

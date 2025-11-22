@@ -80,9 +80,11 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
       renderItem={({ item, index }) => (
         <View style={styles.item}>
           <View style={styles.header}>
-             <View style={[styles.numberBadge, { backgroundColor: themeColor + '20' }]}>
-               <Text style={[styles.number, { color: themeColor }]}>{index + 1}</Text>
-             </View>
+             {item.id !== 'verse_0' && (
+               <View style={[styles.numberBadge, { backgroundColor: themeColor + '20' }]}>
+                 <Text style={[styles.number, { color: themeColor }]}>{item.id.replace('verse_', '')}</Text>
+               </View>
+             )}
           </View>
           <Text style={styles.arabic}>{item.text}</Text>
           {item.translation && (
