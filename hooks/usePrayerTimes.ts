@@ -30,8 +30,10 @@ export const usePrayerTimes = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [city, setCity] = useState<string>('Locating...');
   const [refreshing, setRefreshing] = useState(false);
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
 
   const fetchPrayerTimes = async (lat: number, lng: number) => {
+    setCoordinates({ lat, lng }); // Update coordinates
     try {
       const date = new Date();
       const formattedDate = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
@@ -108,6 +110,7 @@ export const usePrayerTimes = () => {
     errorMsg,
     city,
     refreshing,
-    refresh
+    refresh,
+    coordinates // Added this
   };
 };
