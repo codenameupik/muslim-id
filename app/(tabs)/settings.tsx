@@ -5,10 +5,10 @@ import { useSettings } from '../../context/SettingsContext';
 import { translations } from '../../constants/i18n';
 
 const THEME_COLORS = [
-  { name: 'Teal', value: '#00695c' },
-  { name: 'Blue', value: '#1976D2' },
-  { name: 'Purple', value: '#7B1FA2' },
-  { name: 'Orange', value: '#E64A19' },
+  { name: 'Teal', color: '#00695c' },
+  { name: 'Blue', color: '#1976D2' },
+  { name: 'Purple', color: '#7B1FA2' },
+  { name: 'Orange', color: '#E64A19' },
 ];
 
 export default function SettingsScreen() {
@@ -43,13 +43,13 @@ export default function SettingsScreen() {
         <View style={styles.colorContainer}>
           {THEME_COLORS.map((color) => (
             <TouchableOpacity
-              key={color.value}
+              key={color.color}
               style={[
                 styles.colorOption,
-                { backgroundColor: color.value },
-                themeColor === color.value && styles.selectedColor
+                { backgroundColor: color.color },
+                themeColor === color.color && styles.selectedColor
               ]}
-              onPress={() => handleThemeSelect(color.value)}
+              onPress={() => handleThemeSelect(color.color)}
             />
           ))}
         </View>

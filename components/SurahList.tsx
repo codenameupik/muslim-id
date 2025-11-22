@@ -1,16 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { FlatList, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import juzInfo from '../assets/quran/juz.json';
 import surahData from '../assets/quran/surah.json';
 import { useSettings } from '../context/SettingsContext';
 
-if (Platform.OS === 'android') {
-  if (UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
-}
 
 interface Surah {
   index: string;
