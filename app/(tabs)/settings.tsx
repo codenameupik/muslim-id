@@ -161,6 +161,9 @@ export default function SettingsScreen() {
         <TouchableOpacity onPress={() => Linking.openURL('https://aladhan.com/')}>
           <Text style={styles.creditLink}>Prayer Times: Aladhan API</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => Linking.openURL('https://github.com/fitrahive/dua-dhikr')}>
+          <Text style={styles.creditLink}>Dua Data: fitrahive/dua-dhikr</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
