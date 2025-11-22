@@ -1,8 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useColorScheme } from 'react-native';
 
 type Language = 'en' | 'id' | null;
 type ThemeColor = '#00695c' | '#1976D2' | '#7B1FA2' | '#E64A19';
+
+interface Theme {
+  background: string;
+  text: string;
+  card: string;
+  textSecondary: string;
+  border: string;
+}
 
 interface SettingsContextType {
   language: Language;
@@ -13,15 +22,27 @@ interface SettingsContextType {
   setArabicFontSize: (size: number) => Promise<void>;
   translationFontSize: number;
   setTranslationFontSize: (size: number) => Promise<void>;
+  theme: Theme;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const systemColorScheme = useColorScheme();
   const [language, setLanguageState] = useState<Language>(null);
   const [themeColor, setThemeColorState] = useState<ThemeColor>('#00695c');
   const [arabicFontSize, setArabicFontSizeState] = useState<number>(24);
   const [translationFontSize, setTranslationFontSizeState] = useState<number>(16);
+
+  const isDark = systemColorScheme === 'dark';
+
+  const theme: Theme = {
+    background: isDark ? '#121212' : '#f5f5f5',
+    text: isDark ? '#ffffff' : '#000000',
+    card: isDark ? '#1e1e1e' : '#ffffff',
+    textSecondary: isDark ? '#aaaaaa' : '#666666',
+    border: isDark ? '#333333' : '#eeeeee',
+  };
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -98,7 +119,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       arabicFontSize,
       setArabicFontSize,
       translationFontSize,
-      setTranslationFontSize
+      setTranslationFontSize,
+      theme
     }}>
       {children}
     </SettingsContext.Provider>

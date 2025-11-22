@@ -139,6 +139,15 @@ export default function Home() {
           <Text style={styles.menuButtonText}>Qibla Direction</Text>
           <Ionicons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.menuButton, { backgroundColor: themeColor }]}
+          onPress={() => router.push('/dua')}
+        >
+          <Ionicons name="book" size={24} color="#fff" />
+          <Text style={styles.menuButtonText}>Dua & Dhikr</Text>
+          <Ionicons name="arrow-forward" size={20} color="#fff" />
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
