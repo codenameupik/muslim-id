@@ -9,7 +9,10 @@ export default function Home() {
   const { themeColor } = useSettings();
   const router = useRouter();
   const { prayerTimes, loading, errorMsg, city, refreshing, refresh } = usePrayerTimes();
-  const [nearestPrayer, setNearestPrayer] = useState<{ name: string; time: string; diff: number } | null>(null);
+  const [prayerState, setPrayerState] = useState<{
+    current: { name: string; time: string } | null;
+    next: { name: string; time: string; diff: number } | null;
+  }>({ current: null, next: null });
 
   useEffect(() => {
     if (prayerTimes) {
@@ -25,32 +28,43 @@ export default function Home() {
         { name: 'Isha', time: prayerTimes.Isha },
       ];
 
-      let nextPrayer = null;
-      let minDiff = Infinity;
-
-      // Convert prayer time string (HH:MM) to minutes
       const getMinutes = (timeStr: string) => {
         const [hours, minutes] = timeStr.split(':').map(Number);
         return hours * 60 + minutes;
       };
 
-      // Find the next prayer
-      for (const prayer of prayers) {
-        const prayerMinutes = getMinutes(prayer.time);
-        let diff = prayerMinutes - currentTime;
-        
-        if (diff < 0) {
-          // Prayer has passed for today, consider it for tomorrow (add 24 hours)
-          diff += 24 * 60;
-        }
+      let nextIndex = -1;
+      let minDiff = Infinity;
 
-        if (diff < minDiff) {
+      // Find next prayer
+      for (let i = 0; i < prayers.length; i++) {
+        const prayerMinutes = getMinutes(prayers[i].time);
+        const diff = prayerMinutes - currentTime;
+
+        if (diff > 0 && diff < minDiff) {
           minDiff = diff;
-          nextPrayer = { ...prayer, diff };
+          nextIndex = i;
         }
       }
 
-      setNearestPrayer(nextPrayer);
+      let current, next;
+
+      if (nextIndex !== -1) {
+        // Found a next prayer today
+        next = { ...prayers[nextIndex], diff: minDiff };
+        // Current is the one before
+        const currentIndex = (nextIndex - 1 + prayers.length) % prayers.length;
+        current = prayers[currentIndex];
+      } else {
+        // Next prayer is Fajr tomorrow
+        const fajrMinutes = getMinutes(prayers[0].time);
+        const diff = (24 * 60 - currentTime) + fajrMinutes;
+        next = { ...prayers[0], diff };
+        // Current is Isha (last one)
+        current = prayers[prayers.length - 1];
+      }
+
+      setPrayerState({ current, next });
     }
   }, [prayerTimes]);
 
@@ -83,13 +97,25 @@ export default function Home() {
           <ActivityIndicator size="large" color={themeColor} />
         ) : errorMsg ? (
           <Text style={styles.errorText}>{errorMsg}</Text>
-        ) : nearestPrayer ? (
+        ) : prayerState.next && prayerState.current ? (
           <View style={styles.prayerCard}>
-            <Text style={styles.nextPrayerLabel}>Next Prayer</Text>
-            <Text style={[styles.prayerName, { color: themeColor }]}>{nearestPrayer.name}</Text>
-            <Text style={styles.prayerTime}>{nearestPrayer.time}</Text>
-            <View style={[styles.countdownBadge, { backgroundColor: themeColor }]}>
-              <Text style={styles.countdownText}>in {formatTimeDiff(nearestPrayer.diff)}</Text>
+            <View style={styles.prayerRow}>
+              <View style={styles.prayerColumn}>
+                <Text style={styles.prayerLabel}>Now</Text>
+                <Text style={[styles.prayerName, { color: themeColor }]}>{prayerState.current.name}</Text>
+                <Text style={styles.prayerTime}>{prayerState.current.time}</Text>
+              </View>
+              
+              <View style={styles.divider} />
+
+              <View style={styles.prayerColumn}>
+                <Text style={styles.prayerLabel}>Next</Text>
+                <Text style={[styles.prayerName, { color: themeColor }]}>{prayerState.next.name}</Text>
+                <Text style={styles.prayerTime}>{prayerState.next.time}</Text>
+                <View style={[styles.countdownBadge, { backgroundColor: themeColor }]}>
+                  <Text style={styles.countdownText}>- {formatTimeDiff(prayerState.next.diff)}</Text>
+                </View>
+              </View>
             </View>
           </View>
         ) : (
@@ -151,41 +177,57 @@ const styles = StyleSheet.create({
   prayerCard: {
     backgroundColor: '#fff',
     borderRadius: 20,
-    padding: 30,
-    alignItems: 'center',
+    padding: 20,
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-  nextPrayerLabel: {
-    fontSize: 16,
+  prayerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  prayerColumn: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  divider: {
+    width: 1,
+    height: '80%',
+    backgroundColor: '#eee',
+    marginHorizontal: 15,
+    alignSelf: 'center',
+  },
+  prayerLabel: {
+    fontSize: 14,
     color: '#666',
-    marginBottom: 10,
+    marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 1,
+    fontWeight: '600',
   },
   prayerName: {
-    fontSize: 36,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   prayerTime: {
-    fontSize: 48,
+    fontSize: 20,
     fontWeight: '300',
     color: '#333',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   countdownBadge: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
   countdownText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 12,
   },
   errorText: {
     color: 'red',
