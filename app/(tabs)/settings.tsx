@@ -10,7 +10,16 @@ const THEME_COLORS = [
 ];
 
 export default function SettingsScreen() {
-  const { language, setLanguage, themeColor, setThemeColor } = useSettings();
+  const { 
+    language, 
+    setLanguage, 
+    themeColor, 
+    setThemeColor,
+    arabicFontSize,
+    setArabicFontSize,
+    translationFontSize,
+    setTranslationFontSize
+  } = useSettings();
 
   const handleLanguageSelect = (lang: 'en' | 'id' | null) => {
     setLanguage(lang);
@@ -63,6 +72,60 @@ export default function SettingsScreen() {
           ))}
         </View>
       </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Text Size</Text>
+        
+        <View style={styles.sizeControl}>
+          <Text style={styles.sizeLabel}>Arabic Text</Text>
+          <View style={styles.sizeButtons}>
+            <TouchableOpacity 
+              style={[styles.sizeButton, { borderColor: themeColor }]} 
+              onPress={() => setArabicFontSize(Math.max(18, arabicFontSize - 2))}
+            >
+              <Text style={[styles.sizeButtonText, { color: themeColor }]}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.sizeValue}>{arabicFontSize}</Text>
+            <TouchableOpacity 
+              style={[styles.sizeButton, { borderColor: themeColor }]} 
+              onPress={() => setArabicFontSize(Math.min(40, arabicFontSize + 2))}
+            >
+              <Text style={[styles.sizeButtonText, { color: themeColor }]}>+</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.sizeControl}>
+          <Text style={styles.sizeLabel}>Translation Text</Text>
+          <View style={styles.sizeButtons}>
+            <TouchableOpacity 
+              style={[styles.sizeButton, { borderColor: themeColor }]} 
+              onPress={() => setTranslationFontSize(Math.max(12, translationFontSize - 2))}
+            >
+              <Text style={[styles.sizeButtonText, { color: themeColor }]}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.sizeValue}>{translationFontSize}</Text>
+            <TouchableOpacity 
+              style={[styles.sizeButton, { borderColor: themeColor }]} 
+              onPress={() => setTranslationFontSize(Math.min(30, translationFontSize + 2))}
+            >
+              <Text style={[styles.sizeButtonText, { color: themeColor }]}>+</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.previewContainer}>
+          <Text style={styles.previewLabel}>Preview</Text>
+          <View style={styles.previewBox}>
+            <Text style={[styles.arabicPreview, { fontSize: arabicFontSize }]}>بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</Text>
+            {language && (
+              <Text style={[styles.translationPreview, { fontSize: translationFontSize }]}>
+                {language === 'id' ? 'Dengan nama Allah Yang Maha Pengasih, Maha Penyayang.' : 'In the name of Allah, the Entirely Merciful, the Especially Merciful.'}
+              </Text>
+            )}
+          </View>
+        </View>
+      </View>
     </ScrollView>
   );
 }
@@ -111,5 +174,66 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
+  },
+  sizeControl: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+    paddingVertical: 8,
+  },
+  sizeLabel: {
+    fontSize: 16,
+    color: '#333',
+  },
+  sizeButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sizeButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sizeButtonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  sizeValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginHorizontal: 12,
+    minWidth: 24,
+    textAlign: 'center',
+  },
+  previewContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#eee',
+  },
+  previewLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#666',
+    marginBottom: 10,
+  },
+  previewBox: {
+    alignItems: 'flex-end',
+  },
+  arabicPreview: {
+    fontFamily: 'System',
+    marginBottom: 8,
+    textAlign: 'right',
+  },
+  translationPreview: {
+    color: '#555',
+    textAlign: 'left',
+    alignSelf: 'flex-start',
   },
 });

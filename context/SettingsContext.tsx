@@ -9,6 +9,10 @@ interface SettingsContextType {
   setLanguage: (lang: Language) => Promise<void>;
   themeColor: ThemeColor;
   setThemeColor: (color: ThemeColor) => Promise<void>;
+  arabicFontSize: number;
+  setArabicFontSize: (size: number) => Promise<void>;
+  translationFontSize: number;
+  setTranslationFontSize: (size: number) => Promise<void>;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -16,6 +20,8 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(null);
   const [themeColor, setThemeColorState] = useState<ThemeColor>('#00695c');
+  const [arabicFontSize, setArabicFontSizeState] = useState<number>(24);
+  const [translationFontSize, setTranslationFontSizeState] = useState<number>(16);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -27,6 +33,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         const storedColor = await AsyncStorage.getItem('themeColor');
         if (storedColor) {
           setThemeColorState(storedColor as ThemeColor);
+        }
+        const storedArabicSize = await AsyncStorage.getItem('arabicFontSize');
+        if (storedArabicSize) {
+          setArabicFontSizeState(parseInt(storedArabicSize, 10));
+        }
+        const storedTransSize = await AsyncStorage.getItem('translationFontSize');
+        if (storedTransSize) {
+          setTranslationFontSizeState(parseInt(storedTransSize, 10));
         }
       } catch (error) {
         console.error('Failed to load settings', error);
@@ -57,8 +71,35 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  const setArabicFontSize = async (size: number) => {
+    try {
+      setArabicFontSizeState(size);
+      await AsyncStorage.setItem('arabicFontSize', size.toString());
+    } catch (error) {
+      console.error('Failed to save arabic font size', error);
+    }
+  };
+
+  const setTranslationFontSize = async (size: number) => {
+    try {
+      setTranslationFontSizeState(size);
+      await AsyncStorage.setItem('translationFontSize', size.toString());
+    } catch (error) {
+      console.error('Failed to save translation font size', error);
+    }
+  };
+
   return (
-    <SettingsContext.Provider value={{ language, setLanguage, themeColor, setThemeColor }}>
+    <SettingsContext.Provider value={{ 
+      language, 
+      setLanguage, 
+      themeColor, 
+      setThemeColor,
+      arabicFontSize,
+      setArabicFontSize,
+      translationFontSize,
+      setTranslationFontSize
+    }}>
       {children}
     </SettingsContext.Provider>
   );

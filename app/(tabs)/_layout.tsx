@@ -22,6 +22,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="prayer"
+        options={{
+          title: 'Prayer Times',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'time' : 'time-outline'} size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',

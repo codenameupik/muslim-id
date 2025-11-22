@@ -21,7 +21,7 @@ export default function JuzDetail() {
   const juzIndex = Array.isArray(id) ? id[0] : id;
   const [verses, setVerses] = useState<VerseItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const { themeColor, language } = useSettings();
+  const { themeColor, language, arabicFontSize, translationFontSize } = useSettings();
 
   useEffect(() => {
     const loadJuzContent = async () => {
@@ -122,9 +122,9 @@ export default function JuzDetail() {
                    </View>
                  )}
               </View>
-              <Text style={styles.arabic}>{item.text}</Text>
+              <Text style={[styles.arabic, { fontSize: arabicFontSize }]}>{item.text}</Text>
               {item.translation && (
-                <Text style={styles.translation}>{item.translation}</Text>
+                <Text style={[styles.translation, { fontSize: translationFontSize }]}>{item.translation}</Text>
               )}
             </View>
           );

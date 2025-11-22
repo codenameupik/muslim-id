@@ -27,7 +27,7 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
   const [surah, setSurah] = useState<SurahDetail | null>(null);
   const [translation, setTranslation] = useState<TranslationDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const { language, themeColor } = useSettings();
+  const { language, themeColor, arabicFontSize, translationFontSize } = useSettings();
 
   useEffect(() => {
     const loadData = async () => {
@@ -86,9 +86,9 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
                </View>
              )}
           </View>
-          <Text style={styles.arabic}>{item.text}</Text>
+          <Text style={[styles.arabic, { fontSize: arabicFontSize }]}>{item.text}</Text>
           {item.translation && (
-            <Text style={styles.translation}>{item.translation}</Text>
+            <Text style={[styles.translation, { fontSize: translationFontSize }]}>{item.translation}</Text>
           )}
         </View>
       )}
