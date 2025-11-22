@@ -16,8 +16,18 @@ export default function SurahDetail() {
         options={{ 
           title: `Surah ${surahIndex}`,
           headerRight: () => (
-            <TouchableOpacity onPress={() => setModalVisible(true)} style={{ marginRight: 10 }}>
-              <Ionicons name="settings-outline" size={24} color="black" />
+            <TouchableOpacity 
+              onPress={() => setModalVisible(true)} 
+              style={{ 
+                marginRight: 10, 
+                backgroundColor: '#FFD700', // Yellow
+                padding: 8, 
+                borderRadius: 8,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <Ionicons name="settings-outline" size={20} color="black" />
             </TouchableOpacity>
           )
         }} 
