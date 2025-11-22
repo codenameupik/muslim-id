@@ -1,12 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSettings } from '../../context/SettingsContext';
 import { usePrayerTimes } from '../../hooks/usePrayerTimes';
 
 export default function Home() {
   const { themeColor } = useSettings();
+  const router = useRouter();
   const { prayerTimes, loading, errorMsg, city, refreshing, refresh } = usePrayerTimes();
   const [nearestPrayer, setNearestPrayer] = useState<{ name: string; time: string; diff: number } | null>(null);
 
@@ -94,6 +95,15 @@ export default function Home() {
         ) : (
           <Text>No prayer times available</Text>
         )}
+
+        <TouchableOpacity 
+          style={[styles.menuButton, { backgroundColor: themeColor }]}
+          onPress={() => router.push('/calendar')}
+        >
+          <Ionicons name="calendar" size={24} color="#fff" />
+          <Text style={styles.menuButtonText}>Islamic Calendar</Text>
+          <Ionicons name="arrow-forward" size={20} color="#fff" />
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -171,5 +181,24 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     textAlign: 'center',
+  },
+  menuButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    borderRadius: 15,
+    marginTop: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  menuButtonText: {
+    flex: 1,
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 15,
   },
 });
