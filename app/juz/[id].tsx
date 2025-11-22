@@ -3,12 +3,15 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import juzInfo from '../../assets/quran/juz.json';
 import surahMap from '../../assets/quran/map';
+import enMap from '../../assets/quran/translation/en/map';
+import idMap from '../../assets/quran/translation/id/map';
 import { useSettings } from '../../context/SettingsContext';
 
 interface VerseItem {
   id: string;
   type: 'header' | 'verse';
   text?: string;
+  translation?: string;
   surahName?: string;
   verseNumber?: number;
 }
@@ -18,7 +21,7 @@ export default function JuzDetail() {
   const juzIndex = Array.isArray(id) ? id[0] : id;
   const [verses, setVerses] = useState<VerseItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const { themeColor } = useSettings();
+  const { themeColor, language } = useSettings();
 
   useEffect(() => {
     const loadJuzContent = async () => {
@@ -41,12 +44,18 @@ export default function JuzDetail() {
         for (let i = startSurahIdx; i <= endSurahIdx; i++) {
           const surahKey = i.toString().padStart(3, '0');
           const surahData = surahMap[surahKey];
+          
+          let translationData = null;
+          if (language) {
+             const map = language === 'en' ? enMap : idMap;
+             translationData = map[surahKey];
+          }
 
           if (surahData) {
             items.push({
               id: `header-${surahKey}`,
               type: 'header',
-              surahName: surahData.name, // Or titleAr if available in map, but map usually has full json
+              surahName: surahData.name,
             });
 
             const sVerse = (i === startSurahIdx) ? startVerse : 1;
@@ -55,11 +64,14 @@ export default function JuzDetail() {
             for (let v = sVerse; v <= eVerse; v++) {
               const verseKey = `verse_${v}`;
               const text = surahData.verse[verseKey];
+              const translationText = translationData?.verse[verseKey];
+              
               if (text) {
                 items.push({
                   id: `${surahKey}-${v}`,
                   type: 'verse',
                   text: text,
+                  translation: translationText,
                   verseNumber: v,
                 });
               }
@@ -77,7 +89,7 @@ export default function JuzDetail() {
     if (juzIndex) {
       loadJuzContent();
     }
-  }, [juzIndex]);
+  }, [juzIndex, language]);
 
   if (loading) {
     return (
@@ -104,11 +116,16 @@ export default function JuzDetail() {
           return (
             <View style={styles.verseContainer}>
               <View style={styles.verseHeader}>
-                 <View style={[styles.numberBadge, { backgroundColor: themeColor + '20' }]}>
-                   <Text style={[styles.number, { color: themeColor }]}>{item.verseNumber}</Text>
-                 </View>
+                 {item.verseNumber !== 0 && (
+                   <View style={[styles.numberBadge, { backgroundColor: themeColor + '20' }]}>
+                     <Text style={[styles.number, { color: themeColor }]}>{item.verseNumber}</Text>
+                   </View>
+                 )}
               </View>
               <Text style={styles.arabic}>{item.text}</Text>
+              {item.translation && (
+                <Text style={styles.translation}>{item.translation}</Text>
+              )}
             </View>
           );
         }}
@@ -170,5 +187,12 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     color: '#000',
     fontFamily: 'System',
+    marginBottom: 8,
+  },
+  translation: {
+    fontSize: 16,
+    color: '#555',
+    lineHeight: 24,
+    textAlign: 'left',
   },
 });
