@@ -162,18 +162,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   colorOption: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     elevation: 2,
+    borderWidth: 3,
+    borderColor: 'transparent',
   },
   selectedColor: {
-    borderWidth: 3,
     borderColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
+    elevation: 4, // Slightly higher elevation for selected
   },
   sizeControl: {
     flexDirection: 'row',
