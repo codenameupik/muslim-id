@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSettings } from '../../context/SettingsContext';
 
 const THEME_COLORS = [
@@ -126,6 +126,16 @@ export default function SettingsScreen() {
           </View>
         </View>
       </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Credits</Text>
+        <TouchableOpacity onPress={() => Linking.openURL('https://github.com/semarketir/quranjson')}>
+          <Text style={styles.creditLink}>Quran Data: semarketir/quranjson</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => Linking.openURL('https://aladhan.com/')}>
+          <Text style={styles.creditLink}>Prayer Times: Aladhan API</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -233,5 +243,11 @@ const styles = StyleSheet.create({
     color: '#555',
     textAlign: 'left',
     alignSelf: 'flex-start',
+  },
+  creditLink: {
+    fontSize: 16,
+    color: '#00695c',
+    marginBottom: 10,
+    textDecorationLine: 'underline',
   },
 });
