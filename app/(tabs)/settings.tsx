@@ -39,21 +39,37 @@ export default function SettingsScreen() {
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.settings.appLanguage}</Text>
-        <View style={styles.row}>
-          <TouchableOpacity
-            style={[styles.languageButton, appLanguage === 'en' && { backgroundColor: themeColor }]}
-            onPress={() => setAppLanguage('en')}
-          >
-            <Text style={[styles.languageButtonText, appLanguage === 'en' && { color: '#fff' }, { color: theme.text }]}>{t.settings.english}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.languageButton, appLanguage === 'id' && { backgroundColor: themeColor }]}
-            onPress={() => setAppLanguage('id')}
-          >
-            <Text style={[styles.languageButtonText, appLanguage === 'id' && { color: '#fff' }, { color: theme.text }]}>{t.settings.indonesia}</Text>
-          </TouchableOpacity>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.settings.themeColor}</Text>
+        <View style={styles.colorContainer}>
+          {THEME_COLORS.map((color) => (
+            <TouchableOpacity
+              key={color.value}
+              style={[
+                styles.colorOption,
+                { backgroundColor: color.value },
+                themeColor === color.value && styles.selectedColor
+              ]}
+              onPress={() => handleThemeSelect(color.value)}
+            />
+          ))}
         </View>
+      </View>
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.settings.appLanguage}</Text>
+        
+        <TouchableOpacity
+          style={[styles.option, appLanguage === 'en' && { backgroundColor: themeColor + '20' }]}
+          onPress={() => setAppLanguage('en')}
+        >
+          <Text style={[styles.optionText, appLanguage === 'en' && { color: themeColor, fontWeight: 'bold' }, { color: theme.text }]}>{t.settings.english}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.option, appLanguage === 'id' && { backgroundColor: themeColor + '20' }]}
+          onPress={() => setAppLanguage('id')}
+        >
+          <Text style={[styles.optionText, appLanguage === 'id' && { color: themeColor, fontWeight: 'bold' }, { color: theme.text }]}>{t.settings.indonesia}</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
@@ -81,22 +97,7 @@ export default function SettingsScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.settings.themeColor}</Text>
-        <View style={styles.colorContainer}>
-          {THEME_COLORS.map((color) => (
-            <TouchableOpacity
-              key={color.value}
-              style={[
-                styles.colorOption,
-                { backgroundColor: color.value },
-                themeColor === color.value && styles.selectedColor
-              ]}
-              onPress={() => handleThemeSelect(color.value)}
-            />
-          ))}
-        </View>
-      </View>
+
 
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.settings.textSize}</Text>
@@ -179,22 +180,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 15,
     color: '#333',
-  },
-  row: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  languageButton: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#eee',
-    alignItems: 'center',
-  },
-  languageButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
   },
   option: {
     padding: 15,
