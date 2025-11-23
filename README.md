@@ -1,50 +1,77 @@
-# Welcome to your Expo app 👋
+# Muslim ID
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Muslim ID is a comprehensive Islamic companion application built with React Native and Expo. It provides essential tools and resources for the daily life of a Muslim, designed with a modern and intuitive user interface.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **📖 Al-Quran**: Read the Holy Quran with easy navigation by Surah or Juz.
+- **🕌 Prayer Times**: Accurate prayer times based on your location.
+- **🧭 Qibla Compass**: Find the Qibla direction anywhere in the world.
+- **📅 Islamic Calendar**: View Hijri dates and important Islamic events.
+- **🤲 Duas**: A collection of authentic supplications for various occasions.
+- **🔍 Search**: Quickly find Surahs, Duas, and other content.
+- **⚙️ Customization**: Settings to tailor the app to your preferences.
 
-   ```bash
-   npm install
-   ```
+## APIs & Data Sources
 
-2. Start the app
+- **[Aladhan API](https://aladhan.com/prayer-times-api)**: Used for accurate Prayer Times, Hijri Calendar, and Qibla direction.
+- **[Quran JSON](https://github.com/semarketir/quranjson)**: Source for Quran text and translations.
+- **[Dua & Dhikr](https://github.com/fitrahive/dua-dhikr)**: Collection of authentic Duas and Dhikr.
 
-   ```bash
-   npx expo start
-   ```
+## Tech Stack
 
-In the output, you'll find options to open the app in a
+- **Framework**: [React Native](https://reactnative.dev/) with [Expo](https://expo.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Routing**: [Expo Router](https://docs.expo.dev/router/introduction/)
+- **Icons**: [Expo Symbols](https://docs.expo.dev/versions/latest/sdk/symbols/) / SF Symbols
+- **Styling**: React Native StyleSheet
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Getting Started
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Prerequisites
 
-## Get a fresh project
+- Node.js (LTS recommended)
+- npm or yarn
 
-When you're ready, run:
+### Installation
 
-```bash
-npm run reset-project
-```
+1.  Clone the repository:
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+    ```bash
+    git clone https://github.com/codenameupik/muslim-id.git
+    cd muslim-id
+    ```
 
-## Learn more
+2.  Install dependencies:
 
-To learn more about developing your project with Expo, look at the following resources:
+    ```bash
+    npm install
+    ```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+3.  Start the app:
 
-## Join the community
+    ```bash
+    npx expo start
+    ```
 
-Join our community of developers creating universal apps.
+4.  Use the Expo Go app on your phone to scan the QR code, or run on an emulator/simulator.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Project Structure
+
+- `app/`: Main application source code (Expo Router screens).
+- `components/`: Reusable UI components.
+- `constants/`: App constants and configuration.
+- `hooks/`: Custom React hooks.
+- `assets/`: Images, fonts, and other static assets.
+
+## Screenshots
+
+<div style="display: flex; flex-direction: row; gap: 10px; overflow-x: auto;">
+  <!-- Add your screenshots here -->
+  <!-- <img src="./assets/screenshots/home.png" width="200" /> -->
+  <!-- <img src="./assets/screenshots/quran.png" width="200" /> -->
+</div>
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
