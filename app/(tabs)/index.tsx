@@ -1,16 +1,25 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Stack, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSettings } from '../../context/SettingsContext';
-import { usePrayerTimes } from '../../hooks/usePrayerTimes';
+import { Ionicons } from "@expo/vector-icons";
+import { Stack, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+    ActivityIndicator,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import { useSettings } from "../../context/SettingsContext";
+import { usePrayerTimes } from "../../hooks/usePrayerTimes";
 
-import { translations } from '../../constants/i18n';
+import { translations } from "../../constants/i18n";
 
 export default function Home() {
-  const { themeColor, appLanguage } = useSettings();
+  const { themeColor, appLanguage, lastRead } = useSettings();
   const router = useRouter();
-  const { prayerTimes, loading, errorMsg, city, refreshing, refresh } = usePrayerTimes();
+  const { prayerTimes, loading, errorMsg, city, refreshing, refresh } =
+    usePrayerTimes();
   const t = translations[appLanguage];
   const [prayerState, setPrayerState] = useState<{
     current: { name: string; time: string } | null;
@@ -23,16 +32,16 @@ export default function Home() {
       const currentTime = now.getHours() * 60 + now.getMinutes();
 
       const prayers = [
-        { name: 'Fajr', time: prayerTimes.Fajr },
-        { name: 'Sunrise', time: prayerTimes.Sunrise },
-        { name: 'Dhuhr', time: prayerTimes.Dhuhr },
-        { name: 'Asr', time: prayerTimes.Asr },
-        { name: 'Maghrib', time: prayerTimes.Maghrib },
-        { name: 'Isha', time: prayerTimes.Isha },
+        { name: "Fajr", time: prayerTimes.Fajr },
+        { name: "Sunrise", time: prayerTimes.Sunrise },
+        { name: "Dhuhr", time: prayerTimes.Dhuhr },
+        { name: "Asr", time: prayerTimes.Asr },
+        { name: "Maghrib", time: prayerTimes.Maghrib },
+        { name: "Isha", time: prayerTimes.Isha },
       ];
 
       const getMinutes = (timeStr: string) => {
-        const [hours, minutes] = timeStr.split(':').map(Number);
+        const [hours, minutes] = timeStr.split(":").map(Number);
         return hours * 60 + minutes;
       };
 
@@ -61,7 +70,7 @@ export default function Home() {
       } else {
         // Next prayer is Fajr tomorrow
         const fajrMinutes = getMinutes(prayers[0].time);
-        const diff = (24 * 60 - currentTime) + fajrMinutes;
+        const diff = 24 * 60 - currentTime + fajrMinutes;
         next = { ...prayers[0], diff };
         // Current is Isha (last one)
         current = prayers[prayers.length - 1];
@@ -81,26 +90,37 @@ export default function Home() {
   };
 
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[themeColor]} />
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={refresh}
+          colors={[themeColor]}
+        />
       }
     >
-      <Stack.Screen options={{ title: 'Muslim ID' }} />
-      
+      <Stack.Screen options={{ title: "Muslim ID" }} />
+
       <View style={[styles.header, { backgroundColor: themeColor }]}>
-        <TouchableOpacity 
-          style={styles.searchBar} 
-          onPress={() => router.push('/search')}
+        <TouchableOpacity
+          style={styles.searchBar}
+          onPress={() => router.push("/search")}
         >
-          <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+          <Ionicons
+            name="search"
+            size={20}
+            color="#666"
+            style={styles.searchIcon}
+          />
           <Text style={styles.searchText}>{t.home.searchPlaceholder}</Text>
         </TouchableOpacity>
 
         <Text style={styles.greeting}>{t.home.greeting}</Text>
-        <Text style={styles.location}><Ionicons name="location" size={16} color="#fff" /> {city}</Text>
+        <Text style={styles.location}>
+          <Ionicons name="location" size={16} color="#fff" /> {city}
+        </Text>
       </View>
 
       <View style={styles.cardContainer}>
@@ -113,18 +133,31 @@ export default function Home() {
             <View style={styles.prayerRow}>
               <View style={styles.prayerColumn}>
                 <Text style={styles.prayerLabel}>{t.home.now}</Text>
-                <Text style={[styles.prayerName, { color: themeColor }]}>{prayerState.current.name}</Text>
-                <Text style={styles.prayerTime}>{prayerState.current.time}</Text>
+                <Text style={[styles.prayerName, { color: themeColor }]}>
+                  {prayerState.current.name}
+                </Text>
+                <Text style={styles.prayerTime}>
+                  {prayerState.current.time}
+                </Text>
               </View>
-              
+
               <View style={styles.divider} />
 
               <View style={styles.prayerColumn}>
                 <Text style={styles.prayerLabel}>{t.home.next}</Text>
-                <Text style={[styles.prayerName, { color: themeColor }]}>{prayerState.next.name}</Text>
+                <Text style={[styles.prayerName, { color: themeColor }]}>
+                  {prayerState.next.name}
+                </Text>
                 <Text style={styles.prayerTime}>{prayerState.next.time}</Text>
-                <View style={[styles.countdownBadge, { backgroundColor: themeColor }]}>
-                  <Text style={styles.countdownText}>- {formatTimeDiff(prayerState.next.diff)}</Text>
+                <View
+                  style={[
+                    styles.countdownBadge,
+                    { backgroundColor: themeColor },
+                  ]}
+                >
+                  <Text style={styles.countdownText}>
+                    - {formatTimeDiff(prayerState.next.diff)}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -133,27 +166,61 @@ export default function Home() {
           <Text>No prayer times available</Text>
         )}
 
-        <TouchableOpacity 
+        {lastRead && (
+          <TouchableOpacity
+            style={styles.continueCard}
+            onPress={() => {
+              if (lastRead.type === "surah") {
+                router.push(`/surah/${lastRead.id}`);
+              } else {
+                router.push(`/juz/${lastRead.id}`);
+              }
+            }}
+          >
+            <View style={styles.continueCardContent}>
+              <View
+                style={[
+                  styles.continueIcon,
+                  { backgroundColor: themeColor + "20" },
+                ]}
+              >
+                <Ionicons name="bookmark" size={24} color={themeColor} />
+              </View>
+              <View style={styles.continueInfo}>
+                <Text style={styles.continueLabel}>
+                  {t.home.continueReading}
+                </Text>
+                <Text style={styles.continueSurah}>{lastRead.surahName}</Text>
+                <Text style={styles.continueAyah}>
+                  {t.home.lastReadAt} {lastRead.ayah}
+                </Text>
+              </View>
+              <Ionicons name="arrow-forward" size={20} color={themeColor} />
+            </View>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity
           style={[styles.menuButton, { backgroundColor: themeColor }]}
-          onPress={() => router.push('/calendar')}
+          onPress={() => router.push("/calendar")}
         >
           <Ionicons name="calendar" size={24} color="#fff" />
           <Text style={styles.menuButtonText}>{t.home.calendar}</Text>
           <Ionicons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.menuButton, { backgroundColor: themeColor }]}
-          onPress={() => router.push('/qibla')}
+          onPress={() => router.push("/qibla")}
         >
           <Ionicons name="compass" size={24} color="#fff" />
           <Text style={styles.menuButtonText}>{t.home.qibla}</Text>
           <Ionicons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.menuButton, { backgroundColor: themeColor }]}
-          onPress={() => router.push('/dua')}
+          onPress={() => router.push("/dua")}
         >
           <Ionicons name="book" size={24} color="#fff" />
           <Text style={styles.menuButtonText}>{t.home.dua}</Text>
@@ -167,7 +234,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   contentContainer: {
     flexGrow: 1,
@@ -180,9 +247,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 30,
   },
   searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
     borderRadius: 25,
     paddingHorizontal: 15,
     paddingVertical: 10,
@@ -193,18 +260,18 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   searchText: {
-    color: '#999',
+    color: "#999",
     fontSize: 14,
   },
   greeting: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: "bold",
+    color: "#fff",
     marginBottom: 5,
   },
   location: {
     fontSize: 16,
-    color: '#fff',
+    color: "#fff",
     opacity: 0.9,
   },
   cardContainer: {
@@ -212,48 +279,48 @@ const styles = StyleSheet.create({
     marginTop: -40,
   },
   prayerCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 20,
     elevation: 5,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   prayerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
   },
   prayerColumn: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   divider: {
     width: 1,
-    height: '80%',
-    backgroundColor: '#eee',
+    height: "80%",
+    backgroundColor: "#eee",
     marginHorizontal: 15,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   prayerLabel: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginBottom: 8,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 1,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   prayerName: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   prayerTime: {
     fontSize: 20,
-    fontWeight: '300',
-    color: '#333',
+    fontWeight: "300",
+    color: "#333",
     marginBottom: 10,
   },
   countdownBadge: {
@@ -262,31 +329,75 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   countdownText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 12,
   },
   errorText: {
-    color: 'red',
-    textAlign: 'center',
+    color: "red",
+    textAlign: "center",
   },
   menuButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 20,
     borderRadius: 15,
     marginTop: 20,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
   menuButtonText: {
     flex: 1,
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 15,
+  },
+  continueCard: {
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 16,
+    marginTop: 20,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  continueCardContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  continueIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  continueInfo: {
+    flex: 1,
+  },
+  continueLabel: {
+    fontSize: 12,
+    color: "#999",
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  continueSurah: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  continueAyah: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 2,
   },
 });

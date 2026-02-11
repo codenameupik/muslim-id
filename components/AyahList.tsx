@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
-import surahMap from '../assets/quran/map';
-import enMap from '../assets/quran/translation/en/map';
-import idMap from '../assets/quran/translation/id/map';
-import { useSettings } from '../context/SettingsContext';
-
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+    ActivityIndicator,
+    FlatList,
+    StyleSheet,
+    Text,
+    View,
+    ViewToken,
+} from "react-native";
+import surahMap from "../assets/quran/map";
+import enMap from "../assets/quran/translation/en/map";
+import idMap from "../assets/quran/translation/id/map";
+import { useSettings } from "../context/SettingsContext";
 
 interface SurahDetail {
   index: string;
@@ -25,9 +31,17 @@ interface TranslationDetail {
 
 const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
   const [surah, setSurah] = useState<SurahDetail | null>(null);
-  const [translation, setTranslation] = useState<TranslationDetail | null>(null);
+  const [translation, setTranslation] = useState<TranslationDetail | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
-  const { language, themeColor, arabicFontSize, translationFontSize } = useSettings();
+  const {
+    language,
+    themeColor,
+    arabicFontSize,
+    translationFontSize,
+    setLastRead,
+  } = useSettings();
 
   useEffect(() => {
     const loadData = async () => {
@@ -41,7 +55,7 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
 
         // Load Translation if selected
         if (language) {
-          const map = language === 'en' ? enMap : idMap;
+          const map = language === "en" ? enMap : idMap;
           const transData = map[surahIndex];
           if (transData) {
             setTranslation(transData);
@@ -59,8 +73,36 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
     loadData();
   }, [surahIndex, language]);
 
+  const viewabilityConfig = useRef({
+    viewAreaCoveragePercentThreshold: 50,
+  }).current;
+
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (!surah || viewableItems.length === 0) return;
+      const lastVisible = viewableItems[viewableItems.length - 1];
+      if (lastVisible?.item?.id && lastVisible.item.id !== "verse_0") {
+        const ayahNum = parseInt(lastVisible.item.id.replace("verse_", ""), 10);
+        setLastRead({
+          type: "surah",
+          id: surahIndex,
+          surahName: surah.name,
+          ayah: ayahNum,
+          timestamp: Date.now(),
+        });
+      }
+    },
+    [surah, surahIndex, setLastRead],
+  );
+
   if (loading) {
-    return <ActivityIndicator style={styles.loader} size="large" color={themeColor} />;
+    return (
+      <ActivityIndicator
+        style={styles.loader}
+        size="large"
+        color={themeColor}
+      />
+    );
   }
 
   if (!surah) {
@@ -80,19 +122,34 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
       renderItem={({ item, index }) => (
         <View style={styles.item}>
           <View style={styles.header}>
-             {item.id !== 'verse_0' && (
-               <View style={[styles.numberBadge, { backgroundColor: themeColor + '20' }]}>
-                 <Text style={[styles.number, { color: themeColor }]}>{item.id.replace('verse_', '')}</Text>
-               </View>
-             )}
+            {item.id !== "verse_0" && (
+              <View
+                style={[
+                  styles.numberBadge,
+                  { backgroundColor: themeColor + "20" },
+                ]}
+              >
+                <Text style={[styles.number, { color: themeColor }]}>
+                  {item.id.replace("verse_", "")}
+                </Text>
+              </View>
+            )}
           </View>
-          <Text style={[styles.arabic, { fontSize: arabicFontSize }]}>{item.text}</Text>
+          <Text style={[styles.arabic, { fontSize: arabicFontSize }]}>
+            {item.text}
+          </Text>
           {item.translation && (
-            <Text style={[styles.translation, { fontSize: translationFontSize }]}>{item.translation}</Text>
+            <Text
+              style={[styles.translation, { fontSize: translationFontSize }]}
+            >
+              {item.translation}
+            </Text>
           )}
         </View>
       )}
       contentContainerStyle={styles.list}
+      onViewableItemsChanged={onViewableItemsChanged}
+      viewabilityConfig={viewabilityConfig}
     />
   );
 };
@@ -106,45 +163,45 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   error: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 20,
-    color: 'red',
+    color: "red",
   },
   item: {
     marginBottom: 24,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: "#f0f0f0",
     paddingBottom: 16,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start', 
+    flexDirection: "row",
+    justifyContent: "flex-start",
     marginBottom: 8,
   },
   numberBadge: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   number: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   arabic: {
     fontSize: 24,
     lineHeight: 40,
-    textAlign: 'right',
-    color: '#000',
-    fontFamily: 'System',
+    textAlign: "right",
+    color: "#000",
+    fontFamily: "System",
     marginBottom: 8,
   },
   translation: {
     fontSize: 16,
-    color: '#555',
+    color: "#555",
     lineHeight: 24,
-    textAlign: 'left',
+    textAlign: "left",
   },
 });
 

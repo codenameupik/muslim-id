@@ -1,9 +1,17 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useColorScheme } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useColorScheme } from "react-native";
 
-type Language = 'en' | 'id' | null;
-type ThemeColor = '#00695c' | '#1976D2' | '#7B1FA2' | '#E64A19';
+type Language = "en" | "id" | null;
+type ThemeColor = "#00695c" | "#1976D2" | "#7B1FA2" | "#E64A19";
+
+export interface LastReadBookmark {
+  type: "surah" | "juz";
+  id: string;
+  surahName: string;
+  ayah: number;
+  timestamp: number;
+}
 
 interface Theme {
   background: string;
@@ -14,8 +22,8 @@ interface Theme {
 }
 
 interface SettingsContextType {
-  appLanguage: 'en' | 'id';
-  setAppLanguage: (lang: 'en' | 'id') => Promise<void>;
+  appLanguage: "en" | "id";
+  setAppLanguage: (lang: "en" | "id") => Promise<void>;
   language: Language;
   setLanguage: (lang: Language) => Promise<void>;
   themeColor: ThemeColor;
@@ -25,65 +33,79 @@ interface SettingsContextType {
   translationFontSize: number;
   setTranslationFontSize: (size: number) => Promise<void>;
   theme: Theme;
+  lastRead: LastReadBookmark | null;
+  setLastRead: (bookmark: LastReadBookmark | null) => Promise<void>;
 }
 
-const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
+const SettingsContext = createContext<SettingsContextType | undefined>(
+  undefined,
+);
 
-export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const systemColorScheme = useColorScheme();
   const [language, setLanguageState] = useState<Language>(null);
-  const [themeColor, setThemeColorState] = useState<ThemeColor>('#00695c');
+  const [themeColor, setThemeColorState] = useState<ThemeColor>("#00695c");
   const [arabicFontSize, setArabicFontSizeState] = useState<number>(24);
-  const [translationFontSize, setTranslationFontSizeState] = useState<number>(16);
+  const [translationFontSize, setTranslationFontSizeState] =
+    useState<number>(16);
+  const [lastRead, setLastReadState] = useState<LastReadBookmark | null>(null);
 
-  const isDark = systemColorScheme === 'dark';
+  const isDark = systemColorScheme === "dark";
 
   const theme: Theme = {
-    background: isDark ? '#121212' : '#f5f5f5',
-    text: isDark ? '#ffffff' : '#000000',
-    card: isDark ? '#1e1e1e' : '#ffffff',
-    textSecondary: isDark ? '#aaaaaa' : '#666666',
-    border: isDark ? '#333333' : '#eeeeee',
+    background: isDark ? "#121212" : "#f5f5f5",
+    text: isDark ? "#ffffff" : "#000000",
+    card: isDark ? "#1e1e1e" : "#ffffff",
+    textSecondary: isDark ? "#aaaaaa" : "#666666",
+    border: isDark ? "#333333" : "#eeeeee",
   };
 
-  const [appLanguage, setAppLanguageState] = useState<'en' | 'id'>('en');
+  const [appLanguage, setAppLanguageState] = useState<"en" | "id">("en");
 
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const storedAppLang = await AsyncStorage.getItem('appLanguage');
+        const storedAppLang = await AsyncStorage.getItem("appLanguage");
         if (storedAppLang) {
-          setAppLanguageState(storedAppLang as 'en' | 'id');
+          setAppLanguageState(storedAppLang as "en" | "id");
         }
-        const storedLang = await AsyncStorage.getItem('translationLanguage');
+        const storedLang = await AsyncStorage.getItem("translationLanguage");
         if (storedLang) {
           setLanguageState(storedLang as Language);
         }
-        const storedColor = await AsyncStorage.getItem('themeColor');
+        const storedColor = await AsyncStorage.getItem("themeColor");
         if (storedColor) {
           setThemeColorState(storedColor as ThemeColor);
         }
-        const storedArabicSize = await AsyncStorage.getItem('arabicFontSize');
+        const storedArabicSize = await AsyncStorage.getItem("arabicFontSize");
         if (storedArabicSize) {
           setArabicFontSizeState(parseInt(storedArabicSize, 10));
         }
-        const storedTransSize = await AsyncStorage.getItem('translationFontSize');
+        const storedTransSize = await AsyncStorage.getItem(
+          "translationFontSize",
+        );
         if (storedTransSize) {
           setTranslationFontSizeState(parseInt(storedTransSize, 10));
         }
+        const storedLastRead = await AsyncStorage.getItem("lastRead");
+        if (storedLastRead) {
+          setLastReadState(JSON.parse(storedLastRead));
+        }
       } catch (error) {
-        console.error('Failed to load settings', error);
+        console.error("Failed to load settings", error);
       }
     };
     loadSettings();
   }, []);
 
-  const setAppLanguage = async (lang: 'en' | 'id') => {
+  const setAppLanguage = async (lang: "en" | "id") => {
     try {
       setAppLanguageState(lang);
-      await AsyncStorage.setItem('appLanguage', lang);
+      await AsyncStorage.setItem("appLanguage", lang);
     } catch (error) {
-      console.error('Failed to save app language', error);
+      console.error("Failed to save app language", error);
     }
   };
 
@@ -91,56 +113,73 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       setLanguageState(lang);
       if (lang) {
-        await AsyncStorage.setItem('translationLanguage', lang);
+        await AsyncStorage.setItem("translationLanguage", lang);
       } else {
-        await AsyncStorage.removeItem('translationLanguage');
+        await AsyncStorage.removeItem("translationLanguage");
       }
     } catch (error) {
-      console.error('Failed to save settings', error);
+      console.error("Failed to save settings", error);
     }
   };
 
   const setThemeColor = async (color: ThemeColor) => {
     try {
       setThemeColorState(color);
-      await AsyncStorage.setItem('themeColor', color);
+      await AsyncStorage.setItem("themeColor", color);
     } catch (error) {
-      console.error('Failed to save theme color', error);
+      console.error("Failed to save theme color", error);
     }
   };
 
   const setArabicFontSize = async (size: number) => {
     try {
       setArabicFontSizeState(size);
-      await AsyncStorage.setItem('arabicFontSize', size.toString());
+      await AsyncStorage.setItem("arabicFontSize", size.toString());
     } catch (error) {
-      console.error('Failed to save arabic font size', error);
+      console.error("Failed to save arabic font size", error);
     }
   };
 
   const setTranslationFontSize = async (size: number) => {
     try {
       setTranslationFontSizeState(size);
-      await AsyncStorage.setItem('translationFontSize', size.toString());
+      await AsyncStorage.setItem("translationFontSize", size.toString());
     } catch (error) {
-      console.error('Failed to save translation font size', error);
+      console.error("Failed to save translation font size", error);
+    }
+  };
+
+  const setLastRead = async (bookmark: LastReadBookmark | null) => {
+    try {
+      setLastReadState(bookmark);
+      if (bookmark) {
+        await AsyncStorage.setItem("lastRead", JSON.stringify(bookmark));
+      } else {
+        await AsyncStorage.removeItem("lastRead");
+      }
+    } catch (error) {
+      console.error("Failed to save last read bookmark", error);
     }
   };
 
   return (
-    <SettingsContext.Provider value={{ 
-      appLanguage,
-      setAppLanguage,
-      language, 
-      setLanguage, 
-      themeColor, 
-      setThemeColor,
-      arabicFontSize,
-      setArabicFontSize,
-      translationFontSize,
-      setTranslationFontSize,
-      theme
-    }}>
+    <SettingsContext.Provider
+      value={{
+        appLanguage,
+        setAppLanguage,
+        language,
+        setLanguage,
+        themeColor,
+        setThemeColor,
+        arabicFontSize,
+        setArabicFontSize,
+        translationFontSize,
+        setTranslationFontSize,
+        theme,
+        lastRead,
+        setLastRead,
+      }}
+    >
       {children}
     </SettingsContext.Provider>
   );
@@ -149,7 +188,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 export const useSettings = () => {
   const context = useContext(SettingsContext);
   if (!context) {
-    throw new Error('useSettings must be used within a SettingsProvider');
+    throw new Error("useSettings must be used within a SettingsProvider");
   }
   return context;
 };

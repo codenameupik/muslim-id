@@ -28,7 +28,7 @@ interface JuzInfo {
 
 const SurahList = () => {
   // Theme color from settings
-  const { themeColor } = useSettings();
+  const { themeColor, lastRead } = useSettings();
   const [viewMode, setViewMode] = useState<"surah" | "juz">("surah");
 
   const juzData = useMemo(() => {
@@ -55,6 +55,16 @@ const SurahList = () => {
           <Text style={styles.title}>{item.title}</Text>
           <Text style={styles.subtitle}>{item.count} Verses</Text>
         </View>
+        {lastRead &&
+          lastRead.type === "surah" &&
+          lastRead.id === item.index && (
+            <Ionicons
+              name="bookmark"
+              size={18}
+              color={themeColor}
+              style={{ marginRight: 8 }}
+            />
+          )}
         <Text style={[styles.arabic, { color: themeColor }]}>
           {item.titleAr}
         </Text>
@@ -63,18 +73,29 @@ const SurahList = () => {
   );
 
   const renderJuzItem = ({ item }: { item: JuzInfo }) => {
+    const juzNum = parseInt(item.index, 10);
+    const isBookmarked =
+      lastRead && lastRead.type === "juz" && lastRead.id === juzNum.toString();
     return (
-      <Link href={`/juz/${parseInt(item.index, 10)}`} asChild>
+      <Link href={`/juz/${juzNum}`} asChild>
         <TouchableOpacity style={styles.juzContainer}>
           <View style={styles.juzInfo}>
             <Text style={[styles.juzTitle, { color: themeColor }]}>
-              Juz {parseInt(item.index, 10)}
+              Juz {juzNum}
             </Text>
             <Text style={styles.juzSubtitle}>
               {item.start.name} {item.start.verse.replace("verse_", "")} -{" "}
               {item.end.name} {item.end.verse.replace("verse_", "")}
             </Text>
           </View>
+          {isBookmarked && (
+            <Ionicons
+              name="bookmark"
+              size={18}
+              color={themeColor}
+              style={{ marginRight: 8 }}
+            />
+          )}
           <Ionicons name="chevron-forward" size={20} color={themeColor} />
         </TouchableOpacity>
       </Link>
