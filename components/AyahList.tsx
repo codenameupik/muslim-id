@@ -1,15 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    StyleSheet,
-    Text,
-    View,
-    ViewToken,
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  ViewToken,
 } from "react-native";
 import surahMap from "../assets/quran/map";
 import enMap from "../assets/quran/translation/en/map";
 import idMap from "../assets/quran/translation/id/map";
+import { Fonts } from "../constants/theme";
 import { useSettings } from "../context/SettingsContext";
 
 interface SurahDetail {
@@ -41,6 +42,7 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
     arabicFontSize,
     translationFontSize,
     setLastRead,
+    theme,
   } = useSettings();
 
   useEffect(() => {
@@ -97,11 +99,9 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
 
   if (loading) {
     return (
-      <ActivityIndicator
-        style={styles.loader}
-        size="large"
-        color={themeColor}
-      />
+      <View style={[styles.center, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={themeColor} />
+      </View>
     );
   }
 
@@ -120,13 +120,24 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
       data={verses}
       keyExtractor={(item) => item.id}
       renderItem={({ item, index }) => (
-        <View style={styles.item}>
+        <View
+          style={[
+            styles.item,
+            {
+              borderBottomColor: theme.border,
+              backgroundColor: index % 2 === 0 ? theme.card : theme.background,
+            },
+          ]}
+        >
           <View style={styles.header}>
             {item.id !== "verse_0" && (
               <View
                 style={[
                   styles.numberBadge,
-                  { backgroundColor: themeColor + "20" },
+                  {
+                    backgroundColor: themeColor + "15",
+                    borderColor: themeColor + "30",
+                  },
                 ]}
               >
                 <Text style={[styles.number, { color: themeColor }]}>
@@ -134,20 +145,42 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
                 </Text>
               </View>
             )}
+            <View style={{ flex: 1 }} />
           </View>
-          <Text style={[styles.arabic, { fontSize: arabicFontSize }]}>
+
+          <Text
+            style={[
+              styles.arabic,
+              {
+                fontSize: arabicFontSize,
+                color: theme.text,
+                lineHeight: arabicFontSize * 1.8,
+              },
+            ]}
+          >
             {item.text}
           </Text>
+
           {item.translation && (
             <Text
-              style={[styles.translation, { fontSize: translationFontSize }]}
+              style={[
+                styles.translation,
+                {
+                  fontSize: translationFontSize,
+                  color: theme.textSecondary,
+                  lineHeight: translationFontSize * 1.5,
+                },
+              ]}
             >
               {item.translation}
             </Text>
           )}
         </View>
       )}
-      contentContainerStyle={styles.list}
+      contentContainerStyle={[
+        styles.list,
+        { backgroundColor: theme.background },
+      ]}
       onViewableItemsChanged={onViewableItemsChanged}
       viewabilityConfig={viewabilityConfig}
     />
@@ -156,52 +189,48 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
 
 const styles = StyleSheet.create({
   list: {
-    padding: 16,
     paddingBottom: 40,
   },
-  loader: {
-    marginTop: 20,
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   error: {
     textAlign: "center",
     marginTop: 20,
     color: "red",
+    fontFamily: Fonts.body,
   },
   item: {
-    marginBottom: 24,
+    paddingVertical: 24,
+    paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-    paddingBottom: 16,
   },
   header: {
     flexDirection: "row",
-    justifyContent: "flex-start",
-    marginBottom: 8,
+    marginBottom: 16,
   },
   numberBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
   },
   number: {
-    fontSize: 12,
-    fontWeight: "bold",
+    fontSize: 14,
+    fontFamily: Fonts.semiBold,
   },
   arabic: {
-    fontSize: 24,
-    lineHeight: 40,
     textAlign: "right",
-    color: "#000",
-    fontFamily: "System",
-    marginBottom: 8,
+    fontFamily: Fonts.arabic,
+    marginBottom: 16,
   },
   translation: {
-    fontSize: 16,
-    color: "#555",
-    lineHeight: 24,
     textAlign: "left",
+    fontFamily: Fonts.body,
   },
 });
 

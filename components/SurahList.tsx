@@ -2,14 +2,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    FlatList,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import juzInfo from "../assets/quran/juz.json";
 import surahData from "../assets/quran/surah.json";
+import { Fonts } from "../constants/theme";
 import { useSettings } from "../context/SettingsContext";
 
 interface Surah {
@@ -28,7 +29,7 @@ interface JuzInfo {
 
 const SurahList = () => {
   // Theme color from settings
-  const { themeColor, lastRead } = useSettings();
+  const { themeColor, lastRead, theme } = useSettings();
   const [viewMode, setViewMode] = useState<"surah" | "juz">("surah");
 
   const juzData = useMemo(() => {
@@ -43,17 +44,27 @@ const SurahList = () => {
 
   const renderSurahItem = ({ item }: { item: Surah }) => (
     <Link href={`/surah/${item.index}`} asChild>
-      <TouchableOpacity style={styles.item}>
+      <TouchableOpacity
+        style={[
+          styles.item,
+          { backgroundColor: theme.card, borderBottomColor: theme.border },
+        ]}
+        activeOpacity={0.7}
+      >
         <View
-          style={[styles.numberBadge, { backgroundColor: themeColor + "20" }]}
+          style={[styles.numberBadge, { backgroundColor: themeColor + "15" }]}
         >
           <Text style={[styles.number, { color: themeColor }]}>
             {item.index}
           </Text>
         </View>
         <View style={styles.info}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.subtitle}>{item.count} Verses</Text>
+          <Text style={[styles.title, { color: theme.text }]}>
+            {item.title}
+          </Text>
+          <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
+            {item.count} Verses
+          </Text>
         </View>
         {lastRead &&
           lastRead.type === "surah" &&
@@ -62,7 +73,7 @@ const SurahList = () => {
               name="bookmark"
               size={18}
               color={themeColor}
-              style={{ marginRight: 8 }}
+              style={{ marginRight: 12 }}
             />
           )}
         <Text style={[styles.arabic, { color: themeColor }]}>
@@ -78,12 +89,28 @@ const SurahList = () => {
       lastRead && lastRead.type === "juz" && lastRead.id === juzNum.toString();
     return (
       <Link href={`/juz/${juzNum}`} asChild>
-        <TouchableOpacity style={styles.juzContainer}>
+        <TouchableOpacity
+          style={[
+            styles.juzContainer,
+            { backgroundColor: theme.card, borderBottomColor: theme.border },
+          ]}
+          activeOpacity={0.7}
+        >
+          <View style={styles.juzIconContainer}>
+            <View
+              style={[styles.juzIconRing, { borderColor: themeColor + "40" }]}
+            >
+              <Text style={[styles.juzNumber, { color: themeColor }]}>
+                {juzNum}
+              </Text>
+            </View>
+          </View>
+
           <View style={styles.juzInfo}>
-            <Text style={[styles.juzTitle, { color: themeColor }]}>
+            <Text style={[styles.juzTitle, { color: theme.text }]}>
               Juz {juzNum}
             </Text>
-            <Text style={styles.juzSubtitle}>
+            <Text style={[styles.juzSubtitle, { color: theme.textSecondary }]}>
               {item.start.name} {item.start.verse.replace("verse_", "")} -{" "}
               {item.end.name} {item.end.verse.replace("verse_", "")}
             </Text>
@@ -96,26 +123,35 @@ const SurahList = () => {
               style={{ marginRight: 8 }}
             />
           )}
-          <Ionicons name="chevron-forward" size={20} color={themeColor} />
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={theme.textSecondary}
+          />
         </TouchableOpacity>
       </Link>
     );
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.toggleContainer}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={[styles.toggleContainer, { backgroundColor: theme.border }]}>
         <TouchableOpacity
           style={[
             styles.toggleButton,
-            viewMode === "juz" && { backgroundColor: themeColor },
+            viewMode === "juz" && [
+              styles.activeToggle,
+              { backgroundColor: theme.card },
+            ],
           ]}
           onPress={() => setViewMode("juz")}
         >
           <Text
             style={[
               styles.toggleText,
-              viewMode === "juz" ? styles.activeText : { color: themeColor },
+              viewMode === "juz"
+                ? { color: themeColor }
+                : { color: theme.textSecondary },
             ]}
           >
             Juz
@@ -124,14 +160,19 @@ const SurahList = () => {
         <TouchableOpacity
           style={[
             styles.toggleButton,
-            viewMode === "surah" && { backgroundColor: themeColor },
+            viewMode === "surah" && [
+              styles.activeToggle,
+              { backgroundColor: theme.card },
+            ],
           ]}
           onPress={() => setViewMode("surah")}
         >
           <Text
             style={[
               styles.toggleText,
-              viewMode === "surah" ? styles.activeText : { color: themeColor },
+              viewMode === "surah"
+                ? { color: themeColor }
+                : { color: theme.textSecondary },
             ]}
           >
             Surah
@@ -144,12 +185,14 @@ const SurahList = () => {
           data={surahData}
           keyExtractor={(item) => item.index}
           renderItem={renderSurahItem}
+          contentContainerStyle={styles.listContent}
         />
       ) : (
         <FlatList
           data={juzData}
           keyExtractor={(item) => item.index}
           renderItem={renderJuzItem}
+          contentContainerStyle={styles.listContent}
         />
       )}
     </View>
@@ -159,26 +202,32 @@ const SurahList = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+  },
+  listContent: {
+    paddingBottom: 40,
   },
   toggleContainer: {
     flexDirection: "row",
     margin: 16,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
+    borderRadius: 12,
     padding: 4,
   },
   toggleButton: {
     flex: 1,
     paddingVertical: 8,
     alignItems: "center",
-    borderRadius: 6,
+    borderRadius: 8,
+  },
+  activeToggle: {
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   toggleText: {
-    fontWeight: "bold",
-  },
-  activeText: {
-    color: "#fff",
+    fontFamily: Fonts.semiBold,
+    fontSize: 14,
   },
   item: {
     flexDirection: "row",
@@ -190,49 +239,63 @@ const styles = StyleSheet.create({
   numberBadge: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 16,
   },
   number: {
-    fontWeight: "bold",
+    fontFamily: Fonts.semiBold,
+    fontSize: 14,
   },
   info: {
     flex: 1,
   },
   title: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: Fonts.heading,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 12,
-    color: "#666",
+    fontFamily: Fonts.body,
   },
   arabic: {
-    fontSize: 20,
-    fontFamily: "System",
+    fontSize: 24,
+    fontFamily: Fonts.arabic,
   },
   juzContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+  },
+  juzIconContainer: {
+    marginRight: 16,
+  },
+  juzIconRing: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  juzNumber: {
+    fontFamily: Fonts.heading,
+    fontSize: 14,
   },
   juzInfo: {
     flex: 1,
   },
   juzTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: Fonts.heading,
   },
   juzSubtitle: {
     fontSize: 12,
-    color: "#666",
     marginTop: 2,
+    fontFamily: Fonts.body,
   },
 });
 

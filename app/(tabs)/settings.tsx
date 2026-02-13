@@ -11,6 +11,7 @@ import {
   UIManager,
   View,
 } from "react-native";
+import { Fonts } from "../../constants/theme";
 import { useSettings } from "../../context/SettingsContext";
 
 import { translations } from "../../constants/i18n";
@@ -90,15 +91,22 @@ export default function SettingsScreen() {
         <TouchableOpacity
           style={[
             styles.option,
-            appLanguage === "en" && { backgroundColor: themeColor + "20" },
+            { borderColor: theme.border },
+            appLanguage === "en" && {
+              backgroundColor: themeColor + "20",
+              borderColor: themeColor,
+            },
           ]}
           onPress={() => setAppLanguage("en")}
         >
           <Text
             style={[
               styles.optionText,
-              appLanguage === "en" && { color: themeColor, fontWeight: "bold" },
-              { color: theme.text },
+              appLanguage === "en" && {
+                color: themeColor,
+                fontFamily: Fonts.semiBold,
+              },
+              { color: appLanguage === "en" ? themeColor : theme.text },
             ]}
           >
             {t.settings.english}
@@ -108,15 +116,22 @@ export default function SettingsScreen() {
         <TouchableOpacity
           style={[
             styles.option,
-            appLanguage === "id" && { backgroundColor: themeColor + "20" },
+            { borderColor: theme.border },
+            appLanguage === "id" && {
+              backgroundColor: themeColor + "20",
+              borderColor: themeColor,
+            },
           ]}
           onPress={() => setAppLanguage("id")}
         >
           <Text
             style={[
               styles.optionText,
-              appLanguage === "id" && { color: themeColor, fontWeight: "bold" },
-              { color: theme.text },
+              appLanguage === "id" && {
+                color: themeColor,
+                fontFamily: Fonts.semiBold,
+              },
+              { color: appLanguage === "id" ? themeColor : theme.text },
             ]}
           >
             {t.settings.indonesia}
@@ -132,15 +147,22 @@ export default function SettingsScreen() {
         <TouchableOpacity
           style={[
             styles.option,
-            language === "en" && { backgroundColor: themeColor + "20" },
+            { borderColor: theme.border },
+            language === "en" && {
+              backgroundColor: themeColor + "20",
+              borderColor: themeColor,
+            },
           ]}
           onPress={() => handleLanguageSelect("en")}
         >
           <Text
             style={[
               styles.optionText,
-              language === "en" && { color: themeColor, fontWeight: "bold" },
-              { color: theme.text },
+              language === "en" && {
+                color: themeColor,
+                fontFamily: Fonts.semiBold,
+              },
+              { color: language === "en" ? themeColor : theme.text },
             ]}
           >
             {t.settings.english}
@@ -150,15 +172,22 @@ export default function SettingsScreen() {
         <TouchableOpacity
           style={[
             styles.option,
-            language === "id" && { backgroundColor: themeColor + "20" },
+            { borderColor: theme.border },
+            language === "id" && {
+              backgroundColor: themeColor + "20",
+              borderColor: themeColor,
+            },
           ]}
           onPress={() => handleLanguageSelect("id")}
         >
           <Text
             style={[
               styles.optionText,
-              language === "id" && { color: themeColor, fontWeight: "bold" },
-              { color: theme.text },
+              language === "id" && {
+                color: themeColor,
+                fontFamily: Fonts.semiBold,
+              },
+              { color: language === "id" ? themeColor : theme.text },
             ]}
           >
             {t.settings.bahasaIndonesia}
@@ -168,15 +197,22 @@ export default function SettingsScreen() {
         <TouchableOpacity
           style={[
             styles.option,
-            language === null && { backgroundColor: themeColor + "20" },
+            { borderColor: theme.border },
+            language === null && {
+              backgroundColor: themeColor + "20",
+              borderColor: themeColor,
+            },
           ]}
           onPress={() => handleLanguageSelect(null)}
         >
           <Text
             style={[
               styles.optionText,
-              language === null && { color: themeColor, fontWeight: "bold" },
-              { color: theme.text },
+              language === null && {
+                color: themeColor,
+                fontFamily: Fonts.semiBold,
+              },
+              { color: language === null ? themeColor : theme.text },
             ]}
           >
             {t.settings.none}
@@ -363,20 +399,20 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: Fonts.heading,
     marginBottom: 15,
     color: "#333",
   },
   option: {
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 12,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: "#eee",
   },
   optionText: {
     fontSize: 16,
     color: "#333",
+    fontFamily: Fonts.body,
   },
   colorContainer: {
     flexDirection: "row",
@@ -384,16 +420,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   colorOption: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     elevation: 2,
     borderWidth: 3,
     borderColor: "transparent",
   },
   selectedColor: {
     borderColor: "#fff",
-    elevation: 4, // Slightly higher elevation for selected
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   sizeControl: {
     flexDirection: "row",
@@ -405,6 +445,7 @@ const styles = StyleSheet.create({
   sizeLabel: {
     fontSize: 16,
     color: "#333",
+    fontFamily: Fonts.body,
   },
   sizeButtons: {
     flexDirection: "row",
@@ -420,26 +461,24 @@ const styles = StyleSheet.create({
   },
   sizeButtonText: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: Fonts.heading,
   },
   sizeValue: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: Fonts.semiBold,
     marginHorizontal: 12,
     minWidth: 24,
     textAlign: "center",
   },
   previewContainer: {
     marginTop: 20,
-    padding: 15,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 10,
+    padding: 20,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#eee",
   },
   previewLabel: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: Fonts.semiBold,
     color: "#666",
     marginBottom: 10,
   },
@@ -447,7 +486,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   arabicPreview: {
-    fontFamily: "System",
+    fontFamily: Fonts.arabic,
     marginBottom: 8,
     textAlign: "right",
   },
@@ -455,14 +494,16 @@ const styles = StyleSheet.create({
     color: "#555",
     textAlign: "left",
     alignSelf: "flex-start",
+    fontFamily: Fonts.body,
   },
   creditLink: {
     fontSize: 16,
     color: "#00695c",
     textDecorationLine: "underline",
+    fontFamily: Fonts.body,
   },
   card: {
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     overflow: "hidden",
   },
@@ -481,6 +522,6 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: Fonts.heading,
   },
 });
