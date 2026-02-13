@@ -78,6 +78,7 @@ export const translations = {
       calendar: "Kalender Hijriah",
       qibla: "Arah Kiblat",
       dua: "Doa & Dzikir",
+      bookmarks: "Penanda",
       continueReading: "Lanjut Membaca",
       lastReadAt: "Ayat",
     },
