@@ -7,6 +7,7 @@ import {
     Text,
     TouchableOpacity,
     View,
+    useColorScheme,
 } from "react-native";
 import juzInfo from "../assets/quran/juz.json";
 import surahData from "../assets/quran/surah.json";
@@ -30,7 +31,9 @@ interface JuzInfo {
 const SurahList = () => {
   // Theme color from settings
   const { themeColor, lastRead, theme } = useSettings();
-  const [viewMode, setViewMode] = useState<"surah" | "juz">("surah");
+  const [viewMode, setViewMode] = useState<"surah" | "juz">("juz");
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
 
   const juzData = useMemo(() => {
     return juzInfo.map((juz: JuzInfo) => {
@@ -46,39 +49,58 @@ const SurahList = () => {
     <Link href={`/surah/${item.index}`} asChild>
       <TouchableOpacity
         style={[
-          styles.item,
-          { backgroundColor: theme.card, borderBottomColor: theme.border },
+          styles.card,
+          {
+            backgroundColor: theme.card,
+            shadowColor: theme.text,
+            shadowOpacity: isDark ? 0.3 : 0.08,
+          },
         ]}
-        activeOpacity={0.7}
+        activeOpacity={0.8}
       >
-        <View
-          style={[styles.numberBadge, { backgroundColor: themeColor + "15" }]}
-        >
-          <Text style={[styles.number, { color: themeColor }]}>
-            {item.index}
-          </Text>
+        <View style={styles.cardContent}>
+          <View
+            style={[styles.numberBadgeContainer, { borderColor: themeColor }]}
+          >
+            <View
+              style={[
+                styles.numberBadge,
+                { backgroundColor: themeColor + "15" },
+              ]}
+            >
+              <Text style={[styles.number, { color: themeColor }]}>
+                {item.index}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.info}>
+            <Text style={[styles.title, { color: theme.text }]}>
+              {item.title}
+            </Text>
+            <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
+              {item.count} Verses
+            </Text>
+          </View>
+
+          <View style={styles.rightContent}>
+            <Text style={[styles.arabic, { color: themeColor }]}>
+              {item.titleAr}
+            </Text>
+            {lastRead &&
+              lastRead.type === "surah" &&
+              lastRead.id === item.index && (
+                <View
+                  style={[
+                    styles.bookmarkBadge,
+                    { backgroundColor: themeColor + "20" },
+                  ]}
+                >
+                  <Ionicons name="bookmark" size={14} color={themeColor} />
+                </View>
+              )}
+          </View>
         </View>
-        <View style={styles.info}>
-          <Text style={[styles.title, { color: theme.text }]}>
-            {item.title}
-          </Text>
-          <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-            {item.count} Verses
-          </Text>
-        </View>
-        {lastRead &&
-          lastRead.type === "surah" &&
-          lastRead.id === item.index && (
-            <Ionicons
-              name="bookmark"
-              size={18}
-              color={themeColor}
-              style={{ marginRight: 12 }}
-            />
-          )}
-        <Text style={[styles.arabic, { color: themeColor }]}>
-          {item.titleAr}
-        </Text>
       </TouchableOpacity>
     </Link>
   );
@@ -91,43 +113,58 @@ const SurahList = () => {
       <Link href={`/juz/${juzNum}`} asChild>
         <TouchableOpacity
           style={[
-            styles.juzContainer,
-            { backgroundColor: theme.card, borderBottomColor: theme.border },
+            styles.card,
+            {
+              backgroundColor: theme.card,
+              shadowColor: theme.text,
+              shadowOpacity: isDark ? 0.3 : 0.08,
+            },
           ]}
-          activeOpacity={0.7}
+          activeOpacity={0.8}
         >
-          <View style={styles.juzIconContainer}>
-            <View
-              style={[styles.juzIconRing, { borderColor: themeColor + "40" }]}
-            >
+          <View style={styles.cardContent}>
+            <View style={[styles.juzIconRing, { borderColor: themeColor }]}>
               <Text style={[styles.juzNumber, { color: themeColor }]}>
                 {juzNum}
               </Text>
             </View>
-          </View>
 
-          <View style={styles.juzInfo}>
-            <Text style={[styles.juzTitle, { color: theme.text }]}>
-              Juz {juzNum}
-            </Text>
-            <Text style={[styles.juzSubtitle, { color: theme.textSecondary }]}>
-              {item.start.name} {item.start.verse.replace("verse_", "")} -{" "}
-              {item.end.name} {item.end.verse.replace("verse_", "")}
-            </Text>
-          </View>
-          {isBookmarked && (
+            <View style={styles.juzInfo}>
+              <Text style={[styles.juzTitle, { color: theme.text }]}>
+                Juz {juzNum}
+              </Text>
+              <View
+                style={[
+                  styles.verseRangeContainer,
+                  { backgroundColor: theme.background },
+                ]}
+              >
+                <Text
+                  style={[styles.juzSubtitle, { color: theme.textSecondary }]}
+                >
+                  {item.start.name} {item.start.verse.replace("verse_", "")} -{" "}
+                  {item.end.name} {item.end.verse.replace("verse_", "")}
+                </Text>
+              </View>
+            </View>
+
+            {isBookmarked && (
+              <View
+                style={[
+                  styles.bookmarkBadge,
+                  { backgroundColor: themeColor + "20" },
+                ]}
+              >
+                <Ionicons name="bookmark" size={14} color={themeColor} />
+              </View>
+            )}
             <Ionicons
-              name="bookmark"
-              size={18}
-              color={themeColor}
-              style={{ marginRight: 8 }}
+              name="chevron-forward"
+              size={20}
+              color={theme.textSecondary}
+              style={{ marginLeft: 8 }}
             />
-          )}
-          <Ionicons
-            name="chevron-forward"
-            size={20}
-            color={theme.textSecondary}
-          />
+          </View>
         </TouchableOpacity>
       </Link>
     );
@@ -204,97 +241,125 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    paddingBottom: 40,
+    paddingBottom: 20,
+    paddingTop: 8,
   },
   toggleContainer: {
     flexDirection: "row",
     margin: 16,
-    borderRadius: 12,
+    borderRadius: 25, // More rounded, pill shape
     padding: 4,
   },
   toggleButton: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 10,
     alignItems: "center",
-    borderRadius: 8,
+    borderRadius: 20,
   },
   activeToggle: {
-    elevation: 2,
+    elevation: 3,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 3,
   },
   toggleText: {
     fontFamily: Fonts.semiBold,
     fontSize: 14,
   },
-  item: {
+  // Card Styles
+  card: {
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 16,
+    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+  },
+  cardContent: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+  },
+  numberBadgeContainer: {
+    width: 42,
+    height: 42,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 16,
   },
   numberBadge: {
     width: 36,
     height: 36,
-    borderRadius: 12,
+    borderRadius: 10, // Slightly rounded square for a modern look
+    transform: [{ rotate: "45deg" }], // Diamond shape effect
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 16,
   },
   number: {
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.heading,
     fontSize: 14,
+    transform: [{ rotate: "-45deg" }], // Rotate text back
   },
   info: {
     flex: 1,
+    justifyContent: "center",
   },
   title: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: Fonts.heading,
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: Fonts.body,
   },
+  rightContent: {
+    alignItems: "flex-end",
+    justifyContent: "center",
+  },
   arabic: {
-    fontSize: 24,
-    fontFamily: Fonts.arabic,
+    fontSize: 26,
+    fontFamily: Fonts.arabicBold,
+    marginBottom: 4,
   },
-  juzContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    borderBottomWidth: 1,
+  bookmarkBadge: {
+    padding: 4,
+    borderRadius: 8,
+    marginTop: 4,
   },
-  juzIconContainer: {
-    marginRight: 16,
-  },
+  // Juz Specific
   juzIconRing: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 2,
     justifyContent: "center",
     alignItems: "center",
+    marginRight: 16,
+    backgroundColor: "transparent",
+    borderStyle: "dotted", // Dotted border for a distinct look
   },
   juzNumber: {
     fontFamily: Fonts.heading,
-    fontSize: 14,
+    fontSize: 16,
   },
   juzInfo: {
     flex: 1,
   },
   juzTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: Fonts.heading,
+    marginBottom: 6,
+  },
+  verseRangeContainer: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
   juzSubtitle: {
     fontSize: 12,
-    marginTop: 2,
     fontFamily: Fonts.body,
   },
 });
