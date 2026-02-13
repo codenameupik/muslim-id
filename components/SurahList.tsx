@@ -30,7 +30,7 @@ interface JuzInfo {
 
 const SurahList = () => {
   // Theme color from settings
-  const { themeColor, lastRead, theme } = useSettings();
+  const { themeColor, lastRead, theme, bookmarks } = useSettings();
   const [viewMode, setViewMode] = useState<"surah" | "juz">("juz");
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -45,69 +45,85 @@ const SurahList = () => {
     });
   }, []);
 
-  const renderSurahItem = ({ item }: { item: Surah }) => (
-    <Link href={`/surah/${item.index}`} asChild>
-      <TouchableOpacity
-        style={[
-          styles.card,
-          {
-            backgroundColor: theme.card,
-            shadowColor: theme.text,
-            shadowOpacity: isDark ? 0.3 : 0.08,
-          },
-        ]}
-        activeOpacity={0.8}
-      >
-        <View style={styles.cardContent}>
-          <View
-            style={[styles.numberBadgeContainer, { borderColor: themeColor }]}
-          >
+  const renderSurahItem = ({ item }: { item: Surah }) => {
+    const hasBookmarks = bookmarks.some((b) => b.surahIndex === item.index);
+
+    return (
+      <Link href={`/surah/${item.index}`} asChild>
+        <TouchableOpacity
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.card,
+              shadowColor: theme.text,
+              shadowOpacity: isDark ? 0.3 : 0.08,
+            },
+          ]}
+          activeOpacity={0.8}
+        >
+          <View style={styles.cardContent}>
             <View
-              style={[
-                styles.numberBadge,
-                { backgroundColor: themeColor + "15" },
-              ]}
+              style={[styles.numberBadgeContainer, { borderColor: themeColor }]}
             >
-              <Text style={[styles.number, { color: themeColor }]}>
-                {item.index}
+              <View
+                style={[
+                  styles.numberBadge,
+                  { backgroundColor: themeColor + "15" },
+                ]}
+              >
+                <Text style={[styles.number, { color: themeColor }]}>
+                  {item.index}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.info}>
+              <Text style={[styles.title, { color: theme.text }]}>
+                {item.title}
+              </Text>
+              <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
+                {item.count} Verses
               </Text>
             </View>
-          </View>
 
-          <View style={styles.info}>
-            <Text style={[styles.title, { color: theme.text }]}>
-              {item.title}
-            </Text>
-            <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-              {item.count} Verses
-            </Text>
+            <View style={styles.rightContent}>
+              <Text style={[styles.arabic, { color: themeColor }]}>
+                {item.titleAr}
+              </Text>
+              <View style={{ flexDirection: "row", gap: 4 }}>
+                {hasBookmarks && (
+                  <View
+                    style={[
+                      styles.bookmarkBadge,
+                      { backgroundColor: themeColor + "10" },
+                    ]}
+                  >
+                    <Ionicons name="bookmark" size={14} color={themeColor} />
+                  </View>
+                )}
+                {lastRead &&
+                  lastRead.type === "surah" &&
+                  lastRead.id === item.index && (
+                    <View
+                      style={[
+                        styles.bookmarkBadge,
+                        { backgroundColor: themeColor + "20" },
+                      ]}
+                    >
+                      <Ionicons name="glasses" size={14} color={themeColor} />
+                    </View>
+                  )}
+              </View>
+            </View>
           </View>
-
-          <View style={styles.rightContent}>
-            <Text style={[styles.arabic, { color: themeColor }]}>
-              {item.titleAr}
-            </Text>
-            {lastRead &&
-              lastRead.type === "surah" &&
-              lastRead.id === item.index && (
-                <View
-                  style={[
-                    styles.bookmarkBadge,
-                    { backgroundColor: themeColor + "20" },
-                  ]}
-                >
-                  <Ionicons name="bookmark" size={14} color={themeColor} />
-                </View>
-              )}
-          </View>
-        </View>
-      </TouchableOpacity>
-    </Link>
-  );
+        </TouchableOpacity>
+      </Link>
+    );
+  };
 
   const renderJuzItem = ({ item }: { item: JuzInfo }) => {
     const juzNum = parseInt(item.index, 10);
-    const isBookmarked =
+    const isLastRead =
       lastRead && lastRead.type === "juz" && lastRead.id === juzNum.toString();
     return (
       <Link href={`/juz/${juzNum}`} asChild>
@@ -148,14 +164,14 @@ const SurahList = () => {
               </View>
             </View>
 
-            {isBookmarked && (
+            {isLastRead && (
               <View
                 style={[
                   styles.bookmarkBadge,
                   { backgroundColor: themeColor + "20" },
                 ]}
               >
-                <Ionicons name="bookmark" size={14} color={themeColor} />
+                <Ionicons name="glasses" size={14} color={themeColor} />
               </View>
             )}
             <Ionicons
