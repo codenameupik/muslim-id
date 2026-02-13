@@ -1,11 +1,13 @@
+import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
-  ViewToken,
+  ViewToken
 } from "react-native";
 import surahMap from "../assets/quran/map";
 import enMap from "../assets/quran/translation/en/map";
@@ -42,6 +44,9 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
     arabicFontSize,
     translationFontSize,
     setLastRead,
+    isBookmarked,
+    addBookmark,
+    removeBookmark,
     theme,
   } = useSettings();
 
@@ -97,6 +102,24 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
     [surah, surahIndex, setLastRead],
   );
 
+  const toggleBookmark = (ayahNum: number) => {
+    if (!surah) return;
+    const bookmarkId = `${surahIndex}_${ayahNum}`;
+    const bookmarked = isBookmarked(surahIndex, ayahNum);
+
+    if (bookmarked) {
+      removeBookmark(bookmarkId);
+    } else {
+      addBookmark({
+        id: bookmarkId,
+        surahIndex,
+        surahName: surah.name,
+        ayah: ayahNum,
+        timestamp: Date.now(),
+      });
+    }
+  };
+
   if (loading) {
     return (
       <View style={[styles.center, { backgroundColor: theme.background }]}>
@@ -119,64 +142,86 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
     <FlatList
       data={verses}
       keyExtractor={(item) => item.id}
-      renderItem={({ item, index }) => (
-        <View
-          style={[
-            styles.item,
-            {
-              borderBottomColor: theme.border,
-              backgroundColor: index % 2 === 0 ? theme.card : theme.background,
-            },
-          ]}
-        >
-          <View style={styles.header}>
-            {item.id !== "verse_0" && (
-              <View
-                style={[
-                  styles.numberBadge,
-                  {
-                    backgroundColor: themeColor + "15",
-                    borderColor: themeColor + "30",
-                  },
-                ]}
-              >
-                <Text style={[styles.number, { color: themeColor }]}>
-                  {item.id.replace("verse_", "")}
-                </Text>
-              </View>
-            )}
-            <View style={{ flex: 1 }} />
-          </View>
+      renderItem={({ item, index }) => {
+        const ayahNum =
+          item.id === "verse_0"
+            ? 0
+            : parseInt(item.id.replace("verse_", ""), 10);
+        const bookmarked =
+          ayahNum > 0 ? isBookmarked(surahIndex, ayahNum) : false;
 
-          <Text
+        return (
+          <View
             style={[
-              styles.arabic,
+              styles.item,
               {
-                fontSize: arabicFontSize,
-                color: theme.text,
-                lineHeight: arabicFontSize * 1.8,
+                borderBottomColor: theme.border,
+                backgroundColor:
+                  index % 2 === 0 ? theme.card : theme.background,
               },
             ]}
           >
-            {item.text}
-          </Text>
+            <View style={styles.header}>
+              {item.id !== "verse_0" && (
+                <View
+                  style={[
+                    styles.numberBadge,
+                    {
+                      backgroundColor: themeColor + "15",
+                      borderColor: themeColor + "30",
+                    },
+                  ]}
+                >
+                  <Text style={[styles.number, { color: themeColor }]}>
+                    {ayahNum}
+                  </Text>
+                </View>
+              )}
+              <View style={{ flex: 1 }} />
+              {item.id !== "verse_0" && (
+                <TouchableOpacity
+                  onPress={() => toggleBookmark(ayahNum)}
+                  style={{ padding: 4 }}
+                >
+                  <Ionicons
+                    name={bookmarked ? "bookmark" : "bookmark-outline"}
+                    size={24}
+                    color={themeColor}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
 
-          {item.translation && (
             <Text
               style={[
-                styles.translation,
+                styles.arabic,
                 {
-                  fontSize: translationFontSize,
-                  color: theme.textSecondary,
-                  lineHeight: translationFontSize * 1.5,
+                  fontSize: arabicFontSize,
+                  color: theme.text,
+                  lineHeight: arabicFontSize * 1.8,
                 },
               ]}
             >
-              {item.translation}
+              {item.text}
             </Text>
-          )}
-        </View>
-      )}
+
+            {item.translation && (
+              <Text
+                style={[
+                  styles.translation,
+                  {
+                    fontSize: translationFontSize,
+                    color: theme.textSecondary,
+                    lineHeight: translationFontSize * 1.5,
+                  },
+                ]}
+              >
+                {item.translation}
+              </Text>
+            )}
+          </View>
+        );
+      }}
       contentContainerStyle={[
         styles.list,
         { backgroundColor: theme.background },

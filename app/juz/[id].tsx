@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -5,6 +6,7 @@ import {
     FlatList,
     StyleSheet,
     Text,
+    TouchableOpacity,
     View,
     ViewToken,
 } from "react-native";
@@ -20,6 +22,7 @@ interface VerseItem {
   text?: string;
   translation?: string;
   surahName?: string;
+  surahIndex?: string;
   verseNumber?: number;
 }
 
@@ -34,6 +37,10 @@ export default function JuzDetail() {
     arabicFontSize,
     translationFontSize,
     setLastRead,
+    isBookmarked,
+    addBookmark,
+    removeBookmark,
+    theme,
   } = useSettings();
 
   useEffect(() => {
@@ -71,6 +78,7 @@ export default function JuzDetail() {
               id: `header-${surahKey}`,
               type: "header",
               surahName: surahData.name,
+              surahIndex: surahKey,
             });
 
             const sVerse = i === startSurahIdx ? startVerse : 1;
@@ -88,6 +96,8 @@ export default function JuzDetail() {
                   text: text,
                   translation: translationText,
                   verseNumber: v,
+                  surahIndex: surahKey,
+                  surahName: surahData.name,
                 });
               }
             }
@@ -131,21 +141,42 @@ export default function JuzDetail() {
     [juzIndex, setLastRead],
   );
 
+  const toggleBookmark = (item: VerseItem) => {
+    if (!item.surahIndex || !item.verseNumber || !item.surahName) return;
+
+    const bookmarkId = `${item.surahIndex}_${item.verseNumber}`;
+    const bookmarked = isBookmarked(item.surahIndex, item.verseNumber);
+
+    if (bookmarked) {
+      removeBookmark(bookmarkId);
+    } else {
+      addBookmark({
+        id: bookmarkId,
+        surahIndex: item.surahIndex,
+        surahName: item.surahName,
+        ayah: item.verseNumber,
+        timestamp: Date.now(),
+      });
+    }
+  };
+
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View
+        style={[styles.loadingContainer, { backgroundColor: theme.background }]}
+      >
         <ActivityIndicator size="large" color={themeColor} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Stack.Screen options={{ title: `Juz ${juzIndex}` }} />
       <FlatList
         data={verses}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
           if (item.type === "header") {
             return (
               <View
@@ -160,8 +191,19 @@ export default function JuzDetail() {
               </View>
             );
           }
+
+          const isBookmarkedItem =
+            item.surahIndex && item.verseNumber
+              ? isBookmarked(item.surahIndex, item.verseNumber)
+              : false;
+
           return (
-            <View style={styles.verseContainer}>
+            <View
+              style={[
+                styles.verseContainer,
+                { borderBottomColor: theme.border },
+              ]}
+            >
               <View style={styles.verseHeader}>
                 {item.verseNumber !== 0 && (
                   <View
@@ -175,15 +217,34 @@ export default function JuzDetail() {
                     </Text>
                   </View>
                 )}
+                <View style={{ flex: 1 }} />
+                <TouchableOpacity
+                  onPress={() => toggleBookmark(item)}
+                  style={{ padding: 4 }}
+                >
+                  <Ionicons
+                    name={isBookmarkedItem ? "bookmark" : "bookmark-outline"}
+                    size={24}
+                    color={themeColor}
+                  />
+                </TouchableOpacity>
               </View>
-              <Text style={[styles.arabic, { fontSize: arabicFontSize }]}>
+              <Text
+                style={[
+                  styles.arabic,
+                  { fontSize: arabicFontSize, color: theme.text },
+                ]}
+              >
                 {item.text}
               </Text>
               {item.translation && (
                 <Text
                   style={[
                     styles.translation,
-                    { fontSize: translationFontSize },
+                    {
+                      fontSize: translationFontSize,
+                      color: theme.textSecondary,
+                    },
                   ]}
                 >
                   {item.translation}
@@ -192,7 +253,10 @@ export default function JuzDetail() {
             </View>
           );
         }}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[
+          styles.list,
+          { backgroundColor: theme.background },
+        ]}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
       />
@@ -203,7 +267,6 @@ export default function JuzDetail() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   loadingContainer: {
     flex: 1,
@@ -228,12 +291,12 @@ const styles = StyleSheet.create({
   verseContainer: {
     marginBottom: 24,
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
     paddingBottom: 16,
   },
   verseHeader: {
     flexDirection: "row",
     marginBottom: 8,
+    alignItems: "center",
   },
   numberBadge: {
     width: 28,
@@ -250,13 +313,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     lineHeight: 40,
     textAlign: "right",
-    color: "#000",
-    fontFamily: "System",
     marginBottom: 8,
+    fontFamily: "Amiri_400Regular",
   },
   translation: {
     fontSize: 16,
-    color: "#555",
     lineHeight: 24,
     textAlign: "left",
   },

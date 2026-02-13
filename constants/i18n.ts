@@ -16,9 +16,10 @@ export const translations = {
       in: "in",
       calendar: "Islamic Calendar",
       qibla: "Qibla Direction",
-      dua: "Dua & Dhikr",
+      dua: "Dua",
+      bookmarks: "Bookmarks",
       continueReading: "Continue Reading",
-      lastReadAt: "Ayah",
+      lastReadAt: "Last read at Ayah",
     },
     settings: {
       title: "Settings",

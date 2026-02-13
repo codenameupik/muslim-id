@@ -315,6 +315,26 @@ export default function Home() {
                 {t.home.dua}
               </Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.menuCard,
+                { backgroundColor: theme.card, shadowColor: theme.text },
+              ]}
+              onPress={() => router.push("/bookmarks")}
+              activeOpacity={0.8}
+            >
+              <View
+                style={[
+                  styles.menuIconContainer,
+                  { backgroundColor: "#9C27B020" },
+                ]}
+              >
+                <Ionicons name="bookmark" size={24} color="#9C27B0" />
+              </View>
+              <Text style={[styles.menuCardText, { color: theme.text }]}>
+                {t.home.bookmarks || "Bookmarks"}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>

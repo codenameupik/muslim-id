@@ -13,6 +13,14 @@ export interface LastReadBookmark {
   timestamp: number;
 }
 
+export interface Bookmark {
+  id: string; // Unique ID (e.g., surahIndex_ayahNum)
+  surahIndex: string;
+  surahName: string;
+  ayah: number;
+  timestamp: number;
+}
+
 interface Theme {
   background: string;
   text: string;
@@ -35,6 +43,10 @@ interface SettingsContextType {
   theme: Theme;
   lastRead: LastReadBookmark | null;
   setLastRead: (bookmark: LastReadBookmark | null) => Promise<void>;
+  bookmarks: Bookmark[];
+  addBookmark: (bookmark: Bookmark) => Promise<void>;
+  removeBookmark: (id: string) => Promise<void>;
+  isBookmarked: (surahIndex: string, ayah: number) => boolean;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(
@@ -51,6 +63,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [translationFontSize, setTranslationFontSizeState] =
     useState<number>(16);
   const [lastRead, setLastReadState] = useState<LastReadBookmark | null>(null);
+  const [bookmarks, setBookmarksState] = useState<Bookmark[]>([]);
 
   const isDark = systemColorScheme === "dark";
 
@@ -92,6 +105,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         const storedLastRead = await AsyncStorage.getItem("lastRead");
         if (storedLastRead) {
           setLastReadState(JSON.parse(storedLastRead));
+        }
+        const storedBookmarks = await AsyncStorage.getItem("bookmarks");
+        if (storedBookmarks) {
+          setBookmarksState(JSON.parse(storedBookmarks));
         }
       } catch (error) {
         console.error("Failed to load settings", error);
@@ -162,6 +179,32 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const addBookmark = async (bookmark: Bookmark) => {
+    try {
+      const newBookmarks = [...bookmarks, bookmark];
+      setBookmarksState(newBookmarks);
+      await AsyncStorage.setItem("bookmarks", JSON.stringify(newBookmarks));
+    } catch (error) {
+      console.error("Failed to add bookmark", error);
+    }
+  };
+
+  const removeBookmark = async (id: string) => {
+    try {
+      const newBookmarks = bookmarks.filter((b) => b.id !== id);
+      setBookmarksState(newBookmarks);
+      await AsyncStorage.setItem("bookmarks", JSON.stringify(newBookmarks));
+    } catch (error) {
+      console.error("Failed to remove bookmark", error);
+    }
+  };
+
+  const isBookmarked = (surahIndex: string, ayah: number) => {
+    return bookmarks.some(
+      (b) => b.surahIndex === surahIndex && b.ayah === ayah,
+    );
+  };
+
   return (
     <SettingsContext.Provider
       value={{
@@ -178,6 +221,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         theme,
         lastRead,
         setLastRead,
+        bookmarks,
+        addBookmark,
+        removeBookmark,
+        isBookmarked,
       }}
     >
       {children}
