@@ -62,19 +62,10 @@ const SurahList = () => {
           activeOpacity={0.8}
         >
           <View style={styles.cardContent}>
-            <View
-              style={[styles.numberBadgeContainer, { borderColor: themeColor }]}
-            >
-              <View
-                style={[
-                  styles.numberBadge,
-                  { backgroundColor: themeColor + "15" },
-                ]}
-              >
-                <Text style={[styles.number, { color: themeColor }]}>
-                  {item.index}
-                </Text>
-              </View>
+            <View style={[styles.juzIconRing, { borderColor: themeColor }]}>
+              <Text style={[styles.juzNumber, { color: themeColor }]}>
+                {item.index}
+              </Text>
             </View>
 
             <View style={styles.info}>
@@ -297,26 +288,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
   },
-  numberBadgeContainer: {
-    width: 42,
-    height: 42,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 16,
-  },
-  numberBadge: {
-    width: 36,
-    height: 36,
-    borderRadius: 10, // Slightly rounded square for a modern look
-    transform: [{ rotate: "45deg" }], // Diamond shape effect
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  number: {
-    fontFamily: Fonts.heading,
-    fontSize: 14,
-    transform: [{ rotate: "-45deg" }], // Rotate text back
-  },
+
   info: {
     flex: 1,
     justifyContent: "center",
