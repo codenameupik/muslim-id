@@ -222,7 +222,7 @@ export default function Home() {
                     { backgroundColor: themeColor + "15" },
                   ]}
                 >
-                  <Ionicons name="book" size={24} color={themeColor} />
+                  <Ionicons name="glasses" size={24} color={themeColor} />
                 </View>
                 <View style={styles.continueInfo}>
                   <Text style={styles.continueLabel}>
@@ -512,14 +512,16 @@ const styles = StyleSheet.create({
   },
   menuGrid: {
     flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "space-between",
     gap: 12,
   },
   menuCard: {
-    flex: 1,
+    width: "48%", // 2x2 grid
     padding: 16,
     borderRadius: 20,
     alignItems: "center",
+    marginBottom: 12,
     elevation: 3,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
