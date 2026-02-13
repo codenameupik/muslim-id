@@ -1,13 +1,12 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    Alert,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { Fonts } from "../../constants/theme";
 import { useSettings } from "../../context/SettingsContext";
@@ -42,17 +41,16 @@ export default function KhatamSetup() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color={theme.text} />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: theme.text }]}>
-          New Khatam Plan
-        </Text>
-      </View>
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: "New Khatam Plan",
+          headerStyle: { backgroundColor: theme.background },
+          headerTintColor: theme.text,
+          headerShadowVisible: false,
+          headerTitleStyle: { fontFamily: Fonts.heading },
+        }}
+      />
 
       <View style={styles.content}>
         <View style={[styles.card, { backgroundColor: theme.card }]}>
@@ -102,19 +100,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 60,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  backButton: {
-    marginRight: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontFamily: Fonts.heading,
   },
   content: {
     flex: 1,
