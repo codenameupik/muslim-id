@@ -9,7 +9,7 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    View,
+    View
 } from "react-native";
 import { Fonts } from "../../constants/theme";
 import { useSettings } from "../../context/SettingsContext";
@@ -18,7 +18,8 @@ import { usePrayerTimes } from "../../hooks/usePrayerTimes";
 import { translations } from "../../constants/i18n";
 
 export default function Home() {
-  const { themeColor, appLanguage, lastRead, theme } = useSettings();
+  const { themeColor, appLanguage, lastRead, theme, khatamPlan } =
+    useSettings();
   const router = useRouter();
   const { prayerTimes, loading, errorMsg, city, refreshing, refresh } =
     usePrayerTimes();
@@ -251,6 +252,99 @@ export default function Home() {
               </View>
             </TouchableOpacity>
           )}
+          {/* Khatam Planner Widget */}
+          <TouchableOpacity
+            style={[
+              styles.continueCard, // Reuse continue card style for consistency
+              { backgroundColor: theme.card, shadowColor: theme.text },
+            ]}
+            onPress={() => {
+              if (khatamPlan) {
+                router.push("/khatam/log");
+              } else {
+                router.push("/khatam/setup");
+              }
+            }}
+            activeOpacity={0.8}
+          >
+            <View style={styles.continueCardContent}>
+              <View
+                style={[
+                  styles.continueIcon,
+                  { backgroundColor: themeColor + "15" },
+                ]}
+              >
+                <Ionicons name="book" size={24} color={themeColor} />
+              </View>
+              <View style={styles.continueInfo}>
+                <Text style={styles.continueLabel}>
+                  {khatamPlan ? "Khatam Progress" : "Khatam Planner"}
+                </Text>
+                <Text style={[styles.continueSurah, { color: theme.text }]}>
+                  {khatamPlan
+                    ? `Day ${
+                        Math.ceil(
+                          (Date.now() - khatamPlan.startDate) /
+                            (1000 * 60 * 60 * 24),
+                        ) || 1
+                      } of ${khatamPlan.targetDays}`
+                    : "Start New Plan"}
+                </Text>
+                <Text
+                  style={[styles.continueAyah, { color: theme.textSecondary }]}
+                >
+                  {khatamPlan
+                    ? `Target: ${Math.ceil(604 / khatamPlan.targetDays)} pages/day`
+                    : "Set a goal to finish Quran"}
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.arrowIcon,
+                  { backgroundColor: theme.background },
+                ]}
+              >
+                <Ionicons
+                  name={khatamPlan ? "add" : "arrow-forward"}
+                  size={16}
+                  color={themeColor}
+                />
+              </View>
+            </View>
+            {khatamPlan && (
+              <View style={{ marginTop: 12 }}>
+                <View
+                  style={{
+                    height: 6,
+                    backgroundColor: theme.background,
+                    borderRadius: 3,
+                    overflow: "hidden",
+                  }}
+                >
+                  <View
+                    style={{
+                      width: `${Math.min(
+                        ((khatamPlan.currentPage || 0) / 604) * 100,
+                        100,
+                      )}%`,
+                      height: "100%",
+                      backgroundColor: themeColor,
+                    }}
+                  />
+                </View>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    color: theme.textSecondary,
+                    marginTop: 4,
+                    textAlign: "right",
+                  }}
+                >
+                  {khatamPlan.currentPage || 0} / 604 pages
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
 
           <View style={styles.menuGrid}>
             <TouchableOpacity

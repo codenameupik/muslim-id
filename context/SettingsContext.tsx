@@ -29,6 +29,21 @@ interface Theme {
   border: string;
 }
 
+export interface DailyProgress {
+  date: string; // YYYY-MM-DD
+  pagesRead: number;
+}
+
+export interface KhatamPlan {
+  id: string;
+  startDate: number; // timestamp
+  targetDays: number; // e.g., 30
+  currentJuz: number; // 1-30
+  currentPage: number; // 1-604
+  status: "active" | "completed" | "abandoned";
+  history: DailyProgress[];
+}
+
 interface SettingsContextType {
   appLanguage: "en" | "id";
   setAppLanguage: (lang: "en" | "id") => Promise<void>;
@@ -47,6 +62,8 @@ interface SettingsContextType {
   addBookmark: (bookmark: Bookmark) => Promise<void>;
   removeBookmark: (id: string) => Promise<void>;
   isBookmarked: (surahIndex: string, ayah: number) => boolean;
+  khatamPlan: KhatamPlan | null;
+  saveKhatamPlan: (plan: KhatamPlan | null) => Promise<void>;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(
@@ -64,6 +81,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     useState<number>(16);
   const [lastRead, setLastReadState] = useState<LastReadBookmark | null>(null);
   const [bookmarks, setBookmarksState] = useState<Bookmark[]>([]);
+  const [khatamPlan, setKhatamPlanState] = useState<KhatamPlan | null>(null);
 
   const isDark = systemColorScheme === "dark";
 
@@ -109,6 +127,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         const storedBookmarks = await AsyncStorage.getItem("bookmarks");
         if (storedBookmarks) {
           setBookmarksState(JSON.parse(storedBookmarks));
+        }
+        const storedKhatamPlan = await AsyncStorage.getItem("khatamPlan");
+        if (storedKhatamPlan) {
+          setKhatamPlanState(JSON.parse(storedKhatamPlan));
         }
       } catch (error) {
         console.error("Failed to load settings", error);
@@ -199,6 +221,19 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const saveKhatamPlan = async (plan: KhatamPlan | null) => {
+    try {
+      setKhatamPlanState(plan);
+      if (plan) {
+        await AsyncStorage.setItem("khatamPlan", JSON.stringify(plan));
+      } else {
+        await AsyncStorage.removeItem("khatamPlan");
+      }
+    } catch (error) {
+      console.error("Failed to save khatam plan", error);
+    }
+  };
+
   const isBookmarked = (surahIndex: string, ayah: number) => {
     return bookmarks.some(
       (b) => b.surahIndex === surahIndex && b.ayah === ayah,
@@ -225,6 +260,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         addBookmark,
         removeBookmark,
         isBookmarked,
+        khatamPlan,
+        saveKhatamPlan,
       }}
     >
       {children}
