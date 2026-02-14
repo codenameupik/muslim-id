@@ -44,8 +44,13 @@ export default function KhatamLog() {
     };
 
     await saveKhatamPlan(updatedPlan);
-    Alert.alert("Success", `Logged ${pages} pages!`);
-    router.back();
+
+    if (updatedPlan.currentPage >= 604) {
+      router.replace("/khatam/success");
+    } else {
+      Alert.alert("Success", `Logged ${pages} pages!`);
+      router.back();
+    }
   };
 
   const handleDeletePlan = () => {
