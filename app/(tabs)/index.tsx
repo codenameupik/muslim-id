@@ -465,8 +465,8 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 24,
-    paddingTop: 60,
-    paddingBottom: 80,
+    paddingTop: 50,
+    paddingBottom: 40,
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
   },
@@ -474,6 +474,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 8,
   },
   logoPlaceholder: {
     opacity: 0.8,
@@ -484,8 +485,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.95)",
     borderRadius: 16,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 24,
+    paddingVertical: 10,
+    marginBottom: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -513,7 +514,7 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     paddingHorizontal: 20,
-    marginTop: -50,
+    marginTop: -20,
   },
   loader: {
     marginTop: 20,
