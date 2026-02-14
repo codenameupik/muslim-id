@@ -42,6 +42,7 @@ export interface KhatamPlan {
   currentPage: number; // 1-604
   status: "active" | "completed" | "abandoned";
   history: DailyProgress[];
+  endDate?: number; // timestamp when completed
 }
 
 interface SettingsContextType {
@@ -64,6 +65,8 @@ interface SettingsContextType {
   isBookmarked: (surahIndex: string, ayah: number) => boolean;
   khatamPlan: KhatamPlan | null;
   saveKhatamPlan: (plan: KhatamPlan | null) => Promise<void>;
+  completedKhatams: KhatamPlan[];
+  saveCompletedKhatam: (plan: KhatamPlan) => Promise<void>;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(
@@ -82,6 +85,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [lastRead, setLastReadState] = useState<LastReadBookmark | null>(null);
   const [bookmarks, setBookmarksState] = useState<Bookmark[]>([]);
   const [khatamPlan, setKhatamPlanState] = useState<KhatamPlan | null>(null);
+  const [completedKhatams, setCompletedKhatamsState] = useState<KhatamPlan[]>(
+    [],
+  );
 
   const isDark = systemColorScheme === "dark";
 
@@ -131,6 +137,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         const storedKhatamPlan = await AsyncStorage.getItem("khatamPlan");
         if (storedKhatamPlan) {
           setKhatamPlanState(JSON.parse(storedKhatamPlan));
+        }
+        const storedCompletedKhatams =
+          await AsyncStorage.getItem("completedKhatams");
+        if (storedCompletedKhatams) {
+          setCompletedKhatamsState(JSON.parse(storedCompletedKhatams));
         }
       } catch (error) {
         console.error("Failed to load settings", error);
@@ -234,6 +245,19 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const saveCompletedKhatam = async (plan: KhatamPlan) => {
+    try {
+      const newHistory = [plan, ...completedKhatams];
+      setCompletedKhatamsState(newHistory);
+      await AsyncStorage.setItem(
+        "completedKhatams",
+        JSON.stringify(newHistory),
+      );
+    } catch (error) {
+      console.error("Failed to save completed khatam", error);
+    }
+  };
+
   const isBookmarked = (surahIndex: string, ayah: number) => {
     return bookmarks.some(
       (b) => b.surahIndex === surahIndex && b.ayah === ayah,
@@ -262,6 +286,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         isBookmarked,
         khatamPlan,
         saveKhatamPlan,
+        completedKhatams,
+        saveCompletedKhatam,
       }}
     >
       {children}

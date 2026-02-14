@@ -20,7 +20,8 @@ import { useSettings } from "../../context/SettingsContext";
 
 export default function KhatamSuccess() {
   const router = useRouter();
-  const { theme, themeColor, khatamPlan, saveKhatamPlan } = useSettings();
+  const { theme, themeColor, khatamPlan, saveKhatamPlan, saveCompletedKhatam } =
+    useSettings();
   const scale = useSharedValue(0);
 
   useEffect(() => {
@@ -33,7 +34,15 @@ export default function KhatamSuccess() {
 
   const handleFinish = async () => {
     if (khatamPlan) {
-      // Mark as completed - for now we just reset it to allow new plan
+      // Archive current plan to history
+      await saveCompletedKhatam({
+        ...khatamPlan,
+        status: "completed",
+        currentPage: 604,
+        endDate: Date.now(),
+      });
+
+      // Reset for a new plan
       await saveKhatamPlan(null);
     }
     router.replace("/(tabs)");

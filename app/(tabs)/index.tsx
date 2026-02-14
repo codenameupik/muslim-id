@@ -9,7 +9,7 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
 } from "react-native";
 import { Fonts } from "../../constants/theme";
 import { useSettings } from "../../context/SettingsContext";
@@ -427,6 +427,26 @@ export default function Home() {
               </View>
               <Text style={[styles.menuCardText, { color: theme.text }]}>
                 {t.home.bookmarks || "Bookmarks"}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.menuCard,
+                { backgroundColor: theme.card, shadowColor: theme.text },
+              ]}
+              onPress={() => router.push("/khatam/history")}
+              activeOpacity={0.8}
+            >
+              <View
+                style={[
+                  styles.menuIconContainer,
+                  { backgroundColor: "#9C27B020" },
+                ]}
+              >
+                <Ionicons name="medal" size={24} color="#9C27B0" />
+              </View>
+              <Text style={[styles.menuCardText, { color: theme.text }]}>
+                Khatam Journey
               </Text>
             </TouchableOpacity>
           </View>
