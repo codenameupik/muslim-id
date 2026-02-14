@@ -15,13 +15,21 @@ import Animated, {
     useSharedValue,
     withSpring,
 } from "react-native-reanimated";
+import { translations } from "../../constants/i18n";
 import { Fonts } from "../../constants/theme";
 import { useSettings } from "../../context/SettingsContext";
 
 export default function KhatamSuccess() {
   const router = useRouter();
-  const { theme, themeColor, khatamPlan, saveKhatamPlan, saveCompletedKhatam } =
-    useSettings();
+  const {
+    theme,
+    themeColor,
+    khatamPlan,
+    saveKhatamPlan,
+    saveCompletedKhatam,
+    appLanguage,
+  } = useSettings();
+  const t = translations[appLanguage];
   const scale = useSharedValue(0);
 
   useEffect(() => {
@@ -69,7 +77,7 @@ export default function KhatamSuccess() {
             Alhamdulillah!
           </Text>
           <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-            You have completed the Quran.
+            {t.khatam.congrats}
           </Text>
         </Animated.View>
 
@@ -78,7 +86,7 @@ export default function KhatamSuccess() {
           entering={FadeInDown.delay(400).springify()}
         >
           <Text style={[styles.duaTitle, { color: themeColor }]}>
-            Dua Khatam Al-Quran
+            {t.khatam.duaTitle}
           </Text>
           <Text style={[styles.arabic, { color: theme.text }]}>
             اللَّهُمَّ ارْحَمْنِي بِالْقُرْآنِ وَاجْعَلْهُ لِي إِمَامًا وَنُورًا
@@ -106,7 +114,7 @@ export default function KhatamSuccess() {
             style={[styles.button, { backgroundColor: themeColor }]}
             onPress={handleFinish}
           >
-            <Text style={styles.buttonText}>Start New Khatam</Text>
+            <Text style={styles.buttonText}>{t.khatam.startNew}</Text>
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>

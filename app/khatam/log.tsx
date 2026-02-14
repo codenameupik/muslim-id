@@ -8,18 +8,21 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { translations } from "../../constants/i18n";
 import { Fonts } from "../../constants/theme";
 import { useSettings } from "../../context/SettingsContext";
 
 export default function KhatamLog() {
   const router = useRouter();
-  const { theme, themeColor, khatamPlan, saveKhatamPlan } = useSettings();
+  const { theme, themeColor, khatamPlan, saveKhatamPlan, appLanguage } =
+    useSettings();
+  const t = translations[appLanguage];
   const [pagesRead, setPagesRead] = useState("");
 
   if (!khatamPlan) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <Text style={{ color: theme.text }}>No active plan found.</Text>
+        <Text style={{ color: theme.text }}>{t.khatam.noPlan}</Text>
       </View>
     );
   }
@@ -27,7 +30,7 @@ export default function KhatamLog() {
   const handleLogProgress = async () => {
     const pages = parseInt(pagesRead, 10);
     if (isNaN(pages) || pages <= 0) {
-      Alert.alert("Invalid Input", "Please enter valid number of pages.");
+      Alert.alert(t.common.invalidInput, t.common.invalidPages);
       return;
     }
 
@@ -48,30 +51,26 @@ export default function KhatamLog() {
     if (updatedPlan.currentPage >= 604) {
       router.replace("/khatam/success");
     } else {
-      Alert.alert("Success", `Logged ${pages} pages!`);
+      Alert.alert(t.common.success, t.common.loggedSuccess);
       router.back();
     }
   };
 
   const handleDeletePlan = () => {
-    Alert.alert(
-      "Delete Plan",
-      "Are you sure you want to delete your current Khatam plan? This action cannot be undone.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
+    Alert.alert(t.khatam.deleteConfirmTitle, t.khatam.deleteConfirmMsg, [
+      {
+        text: t.common.cancel,
+        style: "cancel",
+      },
+      {
+        text: t.common.delete,
+        style: "destructive",
+        onPress: async () => {
+          await saveKhatamPlan(null);
+          router.replace("/(tabs)");
         },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            await saveKhatamPlan(null);
-            router.replace("/(tabs)");
-          },
-        },
-      ],
-    );
+      },
+    ]);
   };
 
   return (
@@ -79,7 +78,7 @@ export default function KhatamLog() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: "Log Progress",
+          title: t.khatam.logTitle,
           headerStyle: { backgroundColor: theme.background },
           headerTintColor: theme.text,
           headerShadowVisible: false,
@@ -90,7 +89,7 @@ export default function KhatamLog() {
       <View style={styles.content}>
         <View style={[styles.card, { backgroundColor: theme.card }]}>
           <Text style={[styles.label, { color: theme.textSecondary }]}>
-            Pages Read Today
+            {t.khatam.pagesReadToday}
           </Text>
           <View style={styles.inputContainer}>
             <TextInput
@@ -103,7 +102,9 @@ export default function KhatamLog() {
               keyboardType="number-pad"
               autoFocus
             />
-            <Text style={[styles.unit, { color: theme.text }]}>Pages</Text>
+            <Text style={[styles.unit, { color: theme.text }]}>
+              {t.khatam.pages}
+            </Text>
           </View>
         </View>
 
@@ -111,7 +112,7 @@ export default function KhatamLog() {
           style={[styles.createButton, { backgroundColor: themeColor }]}
           onPress={handleLogProgress}
         >
-          <Text style={styles.createButtonText}>Update Progress</Text>
+          <Text style={styles.createButtonText}>{t.khatam.updateProgress}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -119,7 +120,7 @@ export default function KhatamLog() {
           onPress={handleDeletePlan}
         >
           <Text style={[styles.deleteButtonText, { color: "#ef4444" }]}>
-            Delete Plan
+            {t.khatam.deletePlan}
           </Text>
         </TouchableOpacity>
       </View>

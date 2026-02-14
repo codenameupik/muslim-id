@@ -277,25 +277,23 @@ export default function Home() {
                 <Ionicons name="book" size={24} color={themeColor} />
               </View>
               <View style={styles.continueInfo}>
-                <Text style={styles.continueLabel}>
-                  {khatamPlan ? "Khatam Progress" : "Khatam Planner"}
-                </Text>
+                <Text style={styles.continueLabel}>{t.home.khatamPlanner}</Text>
                 <Text style={[styles.continueSurah, { color: theme.text }]}>
                   {khatamPlan
-                    ? `Day ${
+                    ? `${t.khatam.days} ${
                         Math.ceil(
                           (Date.now() - khatamPlan.startDate) /
                             (1000 * 60 * 60 * 24),
                         ) || 1
-                      } of ${khatamPlan.targetDays}`
-                    : "Start New Plan"}
+                      } / ${khatamPlan.targetDays}`
+                    : t.khatam.createPlan}
                 </Text>
                 <Text
                   style={[styles.continueAyah, { color: theme.textSecondary }]}
                 >
                   {khatamPlan
-                    ? `Target: ${Math.ceil(604 / khatamPlan.targetDays)} pages/day`
-                    : "Set a goal to finish Quran"}
+                    ? `${t.khatam.goal}: ${Math.ceil(604 / khatamPlan.targetDays)} ${t.khatam.pagesTotal}`
+                    : t.khatam.noPlan}
                 </Text>
               </View>
               <View
@@ -340,7 +338,10 @@ export default function Home() {
                     textAlign: "right",
                   }}
                 >
-                  {khatamPlan.currentPage || 0} / 604 pages
+                  {t.khatam.pagesCount.replace(
+                    "{{count}}",
+                    (khatamPlan.currentPage || 0).toString(),
+                  )}
                 </Text>
               </View>
             )}
@@ -426,7 +427,7 @@ export default function Home() {
                 <Ionicons name="bookmark" size={24} color="#9C27B0" />
               </View>
               <Text style={[styles.menuCardText, { color: theme.text }]}>
-                {t.home.bookmarks || "Bookmarks"}
+                {t.home.bookmarks}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -446,7 +447,7 @@ export default function Home() {
                 <Ionicons name="medal" size={24} color="#9C27B0" />
               </View>
               <Text style={[styles.menuCardText, { color: theme.text }]}>
-                Khatam Journey
+                {t.home.khatamJourney}
               </Text>
             </TouchableOpacity>
           </View>

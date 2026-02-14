@@ -2,11 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
 import React from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
+import { translations } from "../../constants/i18n";
 import { Fonts } from "../../constants/theme";
 import { KhatamPlan, useSettings } from "../../context/SettingsContext";
 
 export default function KhatamHistory() {
-  const { theme, themeColor, completedKhatams } = useSettings();
+  const { theme, themeColor, completedKhatams, appLanguage } = useSettings();
+  const t = translations[appLanguage];
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString(undefined, {
@@ -31,7 +33,7 @@ export default function KhatamHistory() {
           </View>
           <View style={styles.headerInfo}>
             <Text style={[styles.cardTitle, { color: theme.text }]}>
-              Completed Khatam
+              {t.khatam.completedKhatam}
             </Text>
             <Text style={[styles.cardDate, { color: theme.textSecondary }]}>
               {formatDate(item.startDate)} -{" "}
@@ -43,23 +45,23 @@ export default function KhatamHistory() {
         <View style={styles.statsRow}>
           <View style={styles.stat}>
             <Text style={[styles.statLabel, { color: theme.textSecondary }]}>
-              Duration
+              {t.khatam.duration}
             </Text>
             <Text style={[styles.statValue, { color: theme.text }]}>
-              {duration} Days
+              {duration} {t.khatam.days}
             </Text>
           </View>
           <View style={styles.stat}>
             <Text style={[styles.statLabel, { color: theme.textSecondary }]}>
-              Goal
+              {t.khatam.goal}
             </Text>
             <Text style={[styles.statValue, { color: theme.text }]}>
-              {item.targetDays} Days
+              {item.targetDays} {t.khatam.days}
             </Text>
           </View>
           <View style={styles.stat}>
             <Text style={[styles.statLabel, { color: theme.textSecondary }]}>
-              Pages
+              {t.khatam.pages}
             </Text>
             <Text style={[styles.statValue, { color: theme.text }]}>604</Text>
           </View>
@@ -73,7 +75,7 @@ export default function KhatamHistory() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: "Khatam Journey",
+          title: t.khatam.historyTitle,
           headerStyle: { backgroundColor: theme.background },
           headerTintColor: theme.text,
           headerShadowVisible: false,
@@ -94,7 +96,7 @@ export default function KhatamHistory() {
               color={theme.textSecondary}
             />
             <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
-              Your completed Khatam plans will appear here.
+              {t.khatam.journeyEmpty}
             </Text>
           </View>
         }

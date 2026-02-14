@@ -8,18 +8,20 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { translations } from "../../constants/i18n";
 import { Fonts } from "../../constants/theme";
 import { useSettings } from "../../context/SettingsContext";
 
 export default function KhatamSetup() {
   const router = useRouter();
-  const { theme, themeColor, saveKhatamPlan } = useSettings();
+  const { theme, themeColor, saveKhatamPlan, appLanguage } = useSettings();
+  const t = translations[appLanguage];
   const [days, setDays] = useState("30");
 
   const handleCreatePlan = async () => {
     const targetDays = parseInt(days, 10);
     if (isNaN(targetDays) || targetDays <= 0) {
-      Alert.alert("Invalid Input", "Please enter a valid number of days.");
+      Alert.alert(t.common.invalidInput, t.common.invalidPages);
       return;
     }
 
@@ -44,7 +46,7 @@ export default function KhatamSetup() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: "New Khatam Plan",
+          title: t.khatam.setupTitle,
           headerStyle: { backgroundColor: theme.background },
           headerTintColor: theme.text,
           headerShadowVisible: false,
@@ -55,7 +57,7 @@ export default function KhatamSetup() {
       <View style={styles.content}>
         <View style={[styles.card, { backgroundColor: theme.card }]}>
           <Text style={[styles.label, { color: theme.textSecondary }]}>
-            Target Duration
+            {t.khatam.daysTarget}
           </Text>
           <View style={styles.inputContainer}>
             <TextInput
@@ -68,10 +70,12 @@ export default function KhatamSetup() {
               keyboardType="number-pad"
               maxLength={3}
             />
-            <Text style={[styles.unit, { color: theme.text }]}>Days</Text>
+            <Text style={[styles.unit, { color: theme.text }]}>
+              {t.khatam.days}
+            </Text>
           </View>
           <Text style={[styles.description, { color: theme.textSecondary }]}>
-            To finish the Quran in {days || 30} days, you need to read approx:
+            {t.khatam.pagesPerDay}:
           </Text>
           <View
             style={[styles.targetBox, { backgroundColor: themeColor + "15" }]}
@@ -80,7 +84,7 @@ export default function KhatamSetup() {
               {dailyPages}
             </Text>
             <Text style={[styles.targetLabel, { color: themeColor }]}>
-              Pages / Day
+              {t.khatam.pages} / {t.khatam.days}
             </Text>
           </View>
         </View>
@@ -89,7 +93,7 @@ export default function KhatamSetup() {
           style={[styles.createButton, { backgroundColor: themeColor }]}
           onPress={handleCreatePlan}
         >
-          <Text style={styles.createButtonText}>Start Plan</Text>
+          <Text style={styles.createButtonText}>{t.khatam.createPlan}</Text>
         </TouchableOpacity>
       </View>
     </View>
