@@ -128,7 +128,6 @@ export default function Home() {
 
           <View style={styles.headerContent}>
             <View>
-              <Text style={styles.greeting}>{t.home.greeting}</Text>
               <Text style={styles.location}>
                 <Ionicons name="location" size={16} color="#fff" /> {city}
               </Text>
