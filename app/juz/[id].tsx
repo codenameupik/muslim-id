@@ -1,9 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
     ActivityIndicator,
     FlatList,
+    Modal,
+    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -29,8 +31,10 @@ interface VerseItem {
 export default function JuzDetail() {
   const { id } = useLocalSearchParams();
   const juzIndex = Array.isArray(id) ? id[0] : id;
+  const router = useRouter();
   const [verses, setVerses] = useState<VerseItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSelector, setShowSelector] = useState(false);
   const {
     themeColor,
     language,
@@ -160,6 +164,16 @@ export default function JuzDetail() {
     }
   };
 
+  const nextJuz =
+    parseInt(juzIndex!, 10) < 30 ? parseInt(juzIndex!, 10) + 1 : null;
+  const prevJuz =
+    parseInt(juzIndex!, 10) > 1 ? parseInt(juzIndex!, 10) - 1 : null;
+
+  const navigateToJuz = (index: number) => {
+    setShowSelector(false);
+    router.replace(`/juz/${index}`);
+  };
+
   if (loading) {
     return (
       <View
@@ -259,7 +273,120 @@ export default function JuzDetail() {
         ]}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
+        ListFooterComponent={() => (
+          <View style={styles.footer}>
+            <View style={styles.navigationButtons}>
+              {prevJuz ? (
+                <TouchableOpacity
+                  style={[
+                    styles.navButton,
+                    { backgroundColor: themeColor + "20" },
+                  ]}
+                  onPress={() => navigateToJuz(prevJuz)}
+                >
+                  <Ionicons name="chevron-back" size={24} color={themeColor} />
+                  <Text style={[styles.navButtonText, { color: themeColor }]}>
+                    Juz {prevJuz}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <View style={styles.navButtonPlaceholder} />
+              )}
+
+              <TouchableOpacity
+                style={[styles.selectorButton, { backgroundColor: themeColor }]}
+                onPress={() => setShowSelector(true)}
+              >
+                <Text style={styles.selectorButtonText}>Juz {juzIndex}</Text>
+                <Ionicons
+                  name="chevron-up"
+                  size={16}
+                  color="white"
+                  style={{ marginLeft: 4 }}
+                />
+              </TouchableOpacity>
+
+              {nextJuz ? (
+                <TouchableOpacity
+                  style={[
+                    styles.navButton,
+                    { backgroundColor: themeColor + "20" },
+                  ]}
+                  onPress={() => navigateToJuz(nextJuz)}
+                >
+                  <Text style={[styles.navButtonText, { color: themeColor }]}>
+                    Juz {nextJuz}
+                  </Text>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={24}
+                    color={themeColor}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <View style={styles.navButtonPlaceholder} />
+              )}
+            </View>
+          </View>
+        )}
       />
+
+      <Modal
+        visible={showSelector}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowSelector(false)}
+      >
+        <TouchableOpacity
+          activeOpacity={1}
+          style={styles.modalOverlay}
+          onPress={() => setShowSelector(false)}
+        >
+          <View
+            style={[styles.modalContent, { backgroundColor: theme.background }]}
+          >
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>
+                Pilih Juz
+              </Text>
+              <TouchableOpacity onPress={() => setShowSelector(false)}>
+                <Ionicons name="close" size={24} color={theme.text} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView contentContainerStyle={styles.selectorGrid}>
+              {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => (
+                <TouchableOpacity
+                  key={num}
+                  style={[
+                    styles.selectorItem,
+                    {
+                      backgroundColor:
+                        num === parseInt(juzIndex!, 10)
+                          ? themeColor
+                          : themeColor + "10",
+                    },
+                  ]}
+                  onPress={() => navigateToJuz(num)}
+                >
+                  <Text
+                    style={[
+                      styles.selectorItemText,
+                      {
+                        color:
+                          num === parseInt(juzIndex!, 10)
+                            ? "white"
+                            : theme.text,
+                      },
+                    ]}
+                  >
+                    {num}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -320,5 +447,89 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     textAlign: "left",
+  },
+  footer: {
+    paddingVertical: 24,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(0,0,0,0.05)",
+  },
+  navigationButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  navButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    minWidth: 100,
+  },
+  navButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginHorizontal: 4,
+  },
+  navButtonPlaceholder: {
+    width: 100,
+  },
+  selectorButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+  },
+  selectorButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: "70%",
+    paddingBottom: 20,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(0,0,0,0.05)",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  selectorGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    padding: 10,
+    justifyContent: "center",
+  },
+  selectorItem: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 5,
+  },
+  selectorItemText: {
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
