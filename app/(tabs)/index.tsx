@@ -222,7 +222,7 @@ export default function Home() {
                     { backgroundColor: themeColor + "15" },
                   ]}
                 >
-                  <Ionicons name="glasses" size={24} color={themeColor} />
+                  <Ionicons name="book-outline" size={24} color={themeColor} />
                 </View>
                 <View style={styles.continueInfo}>
                   <Text style={styles.continueLabel}>
