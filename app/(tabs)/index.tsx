@@ -112,6 +112,17 @@ export default function Home() {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
+          <View style={styles.headerContent}>
+            <View>
+              <Text style={styles.location}>
+                <Ionicons name="location" size={16} color="#fff" /> {city}
+              </Text>
+            </View>
+            <View style={styles.logoPlaceholder}>
+              <Ionicons name="moon" size={32} color="rgba(255,255,255,0.8)" />
+            </View>
+          </View>
+
           <TouchableOpacity
             style={styles.searchBar}
             onPress={() => router.push("/search")}
@@ -125,17 +136,6 @@ export default function Home() {
             />
             <Text style={styles.searchText}>{t.home.searchPlaceholder}</Text>
           </TouchableOpacity>
-
-          <View style={styles.headerContent}>
-            <View>
-              <Text style={styles.location}>
-                <Ionicons name="location" size={16} color="#fff" /> {city}
-              </Text>
-            </View>
-            <View style={styles.logoPlaceholder}>
-              <Ionicons name="moon" size={32} color="rgba(255,255,255,0.8)" />
-            </View>
-          </View>
         </LinearGradient>
 
         <View style={styles.cardContainer}>
@@ -200,57 +200,6 @@ export default function Home() {
             </Text>
           )}
 
-          {lastRead && (
-            <TouchableOpacity
-              style={[
-                styles.continueCard,
-                { backgroundColor: theme.card, shadowColor: theme.text },
-              ]}
-              onPress={() => {
-                if (lastRead.type === "surah") {
-                  router.push(`/surah/${lastRead.id}`);
-                } else {
-                  router.push(`/juz/${lastRead.id}`);
-                }
-              }}
-              activeOpacity={0.8}
-            >
-              <View style={styles.continueCardContent}>
-                <View
-                  style={[
-                    styles.continueIcon,
-                    { backgroundColor: themeColor + "15" },
-                  ]}
-                >
-                  <Ionicons name="book-outline" size={24} color={themeColor} />
-                </View>
-                <View style={styles.continueInfo}>
-                  <Text style={styles.continueLabel}>
-                    {t.home.continueReading}
-                  </Text>
-                  <Text style={[styles.continueSurah, { color: theme.text }]}>
-                    {lastRead.surahName}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.continueAyah,
-                      { color: theme.textSecondary },
-                    ]}
-                  >
-                    {t.home.lastReadAt} {lastRead.ayah}
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    styles.arrowIcon,
-                    { backgroundColor: theme.background },
-                  ]}
-                >
-                  <Ionicons name="arrow-forward" size={16} color={themeColor} />
-                </View>
-              </View>
-            </TouchableOpacity>
-          )}
           {/* Khatam Planner Widget */}
           <TouchableOpacity
             style={[
@@ -345,6 +294,58 @@ export default function Home() {
               </View>
             )}
           </TouchableOpacity>
+
+          {lastRead && (
+            <TouchableOpacity
+              style={[
+                styles.continueCard,
+                { backgroundColor: theme.card, shadowColor: theme.text },
+              ]}
+              onPress={() => {
+                if (lastRead.type === "surah") {
+                  router.push(`/surah/${lastRead.id}`);
+                } else {
+                  router.push(`/juz/${lastRead.id}`);
+                }
+              }}
+              activeOpacity={0.8}
+            >
+              <View style={styles.continueCardContent}>
+                <View
+                  style={[
+                    styles.continueIcon,
+                    { backgroundColor: themeColor + "15" },
+                  ]}
+                >
+                  <Ionicons name="book-outline" size={24} color={themeColor} />
+                </View>
+                <View style={styles.continueInfo}>
+                  <Text style={styles.continueLabel}>
+                    {t.home.continueReading}
+                  </Text>
+                  <Text style={[styles.continueSurah, { color: theme.text }]}>
+                    {lastRead.surahName}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.continueAyah,
+                      { color: theme.textSecondary },
+                    ]}
+                  >
+                    {t.home.lastReadAt} {lastRead.ayah}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.arrowIcon,
+                    { backgroundColor: theme.background },
+                  ]}
+                >
+                  <Ionicons name="arrow-forward" size={16} color={themeColor} />
+                </View>
+              </View>
+            </TouchableOpacity>
+          )}
 
           <View style={styles.menuGrid}>
             <TouchableOpacity
@@ -474,7 +475,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 8,
+    marginBottom: 16,
   },
   logoPlaceholder: {
     opacity: 0.8,
@@ -486,7 +487,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    marginBottom: 16,
+    marginBottom: 0,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
