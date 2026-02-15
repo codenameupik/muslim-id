@@ -2,15 +2,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-    ViewToken,
+  ActivityIndicator,
+  FlatList,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewToken,
 } from "react-native";
 import juzInfo from "../../assets/quran/juz.json";
 import surahMap from "../../assets/quran/map";
@@ -134,7 +134,7 @@ export default function JuzDetail() {
           setLastRead({
             type: "juz",
             id: juzIndex!,
-            surahName: `Juz ${juzIndex}`,
+            surahName: `Juz ${juzIndex} Surah ${item.surahName}`,
             ayah: item.verseNumber,
             timestamp: Date.now(),
           });
