@@ -91,6 +91,22 @@ export const translations = {
     calendar: {
       title: "Islamic Calendar",
     },
+    prayer: {
+      title: "Prayer Times",
+      loading: "Getting Prayer Times...",
+      fajr: "Fajr",
+      sunrise: "Sunrise",
+      dhuhr: "Dhuhr",
+      asr: "Asr",
+      maghrib: "Maghrib",
+      isha: "Isha",
+      locating: "Locating...",
+      errorLocation: "Error getting location",
+      errorFetch: "Failed to fetch prayer times",
+      unknownLocation: "Unknown Location",
+      permissionDenied:
+        "Permission to access location was denied. Showing default location (Jakarta).",
+    },
     common: {
       loading: "Loading...",
       error: "Error",
@@ -193,6 +209,22 @@ export const translations = {
     },
     calendar: {
       title: "Kalender Hijriah",
+    },
+    prayer: {
+      title: "Waktu Sholat",
+      loading: "Memuat Waktu Sholat...",
+      fajr: "Subuh",
+      sunrise: "Terbit",
+      dhuhr: "Dzuhur",
+      asr: "Ashar",
+      maghrib: "Maghrib",
+      isha: "Isya",
+      locating: "Mencari Lokasi...",
+      errorLocation: "Gagal mendapatkan lokasi",
+      errorFetch: "Gagal mengambil waktu sholat",
+      unknownLocation: "Lokasi Tidak Diketahui",
+      permissionDenied:
+        "Izin lokasi ditolak. Menampilkan lokasi default (Jakarta).",
     },
     common: {
       loading: "Memuat...",

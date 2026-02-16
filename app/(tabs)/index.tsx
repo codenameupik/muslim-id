@@ -47,12 +47,12 @@ export default function Home() {
       const currentTime = now.getHours() * 60 + now.getMinutes();
 
       const prayers = [
-        { name: "Fajr", time: prayerTimes.Fajr },
-        { name: "Sunrise", time: prayerTimes.Sunrise },
-        { name: "Dhuhr", time: prayerTimes.Dhuhr },
-        { name: "Asr", time: prayerTimes.Asr },
-        { name: "Maghrib", time: prayerTimes.Maghrib },
-        { name: "Isha", time: prayerTimes.Isha },
+        { name: t.prayer.fajr, time: prayerTimes.Fajr },
+        { name: t.prayer.sunrise, time: prayerTimes.Sunrise },
+        { name: t.prayer.dhuhr, time: prayerTimes.Dhuhr },
+        { name: t.prayer.asr, time: prayerTimes.Asr },
+        { name: t.prayer.maghrib, time: prayerTimes.Maghrib },
+        { name: t.prayer.isha, time: prayerTimes.Isha },
       ];
 
       const getMinutes = (timeStr: string) => {
@@ -93,7 +93,7 @@ export default function Home() {
 
       setPrayerState({ current, next });
     }
-  }, [prayerTimes]);
+  }, [prayerTimes, appLanguage, t]);
 
   const formatTimeDiff = (diff: number) => {
     const hours = Math.floor(diff / 60);
@@ -127,7 +127,14 @@ export default function Home() {
           <View style={styles.headerContent}>
             <View>
               <Text style={styles.location}>
-                <Ionicons name="location" size={16} color="#fff" /> {city}
+                <Ionicons name="location" size={16} color="#fff" />{" "}
+                {city === "Locating..."
+                  ? t.prayer.locating
+                  : city === "Unknown Location"
+                    ? t.prayer.unknownLocation
+                    : city.includes("(Default)")
+                      ? city.replace("(Default)", `(${t.common.loading})`)
+                      : city}
               </Text>
             </View>
             <View style={styles.logoPlaceholder}>
@@ -159,7 +166,14 @@ export default function Home() {
             />
           ) : errorMsg ? (
             <Text style={[styles.errorText, { color: theme.textSecondary }]}>
-              {errorMsg}
+              {errorMsg ===
+              "Permission to access location was denied. Showing default location (Jakarta)."
+                ? t.prayer.permissionDenied
+                : errorMsg === "Failed to fetch prayer times"
+                  ? t.prayer.errorFetch
+                  : errorMsg === "Error getting location"
+                    ? t.prayer.errorLocation
+                    : errorMsg}
             </Text>
           ) : prayerState.next && prayerState.current ? (
             <View
@@ -208,7 +222,7 @@ export default function Home() {
             <Text
               style={{ color: theme.text, textAlign: "center", marginTop: 20 }}
             >
-              No prayer times available
+              {t.common.error}
             </Text>
           )}
 
