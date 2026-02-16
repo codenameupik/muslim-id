@@ -1,19 +1,19 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
-import AyahList from '../../components/AyahList';
+import { Stack, useLocalSearchParams } from "expo-router";
+import { StyleSheet, View } from "react-native";
+import AyahList from "../../components/AyahList";
 
 export default function SurahDetail() {
-  const { id } = useLocalSearchParams();
+  const { id, ayah } = useLocalSearchParams();
   const surahIndex = Array.isArray(id) ? id[0] : id;
 
   return (
     <View style={styles.container}>
-      <Stack.Screen 
-        options={{ 
+      <Stack.Screen
+        options={{
           title: `Surah ${surahIndex}`,
-        }} 
+        }}
       />
-      <AyahList surahIndex={surahIndex || '001'} />
+      <AyahList surahIndex={surahIndex || "001"} targetAyah={ayah as string} />
     </View>
   );
 }
@@ -21,6 +21,6 @@ export default function SurahDetail() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
 });

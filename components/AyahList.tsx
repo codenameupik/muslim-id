@@ -1,19 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewToken
+    ActivityIndicator,
+    FlatList,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    ViewToken,
 } from "react-native";
 import surahMap from "../assets/quran/map";
 import enMap from "../assets/quran/translation/en/map";
 import idMap from "../assets/quran/translation/id/map";
 import { Fonts } from "../constants/theme";
 import { useSettings } from "../context/SettingsContext";
+import { isMoreAdvanced } from "../utils/quranUtils";
 
 interface SurahDetail {
   index: string;
@@ -24,6 +25,7 @@ interface SurahDetail {
 
 interface AyahListProps {
   surahIndex: string;
+  targetAyah?: string;
 }
 
 interface TranslationDetail {
@@ -32,18 +34,20 @@ interface TranslationDetail {
   verse: { [key: string]: string };
 }
 
-const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
+const AyahList: React.FC<AyahListProps> = ({ surahIndex, targetAyah }) => {
   const [surah, setSurah] = useState<SurahDetail | null>(null);
   const [translation, setTranslation] = useState<TranslationDetail | null>(
     null,
   );
   const [loading, setLoading] = useState(true);
+  const flatListRef = useRef<FlatList>(null);
   const {
     language,
     themeColor,
     arabicFontSize,
     translationFontSize,
     setLastRead,
+    lastRead,
     isBookmarked,
     addBookmark,
     removeBookmark,
@@ -80,6 +84,34 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
     loadData();
   }, [surahIndex, language]);
 
+  const verses = React.useMemo(() => {
+    if (!surah) return [];
+    return Object.entries(surah.verse).map(([key, text]) => ({
+      id: key,
+      text,
+      translation: translation?.verse[key],
+    }));
+  }, [surah, translation]);
+
+  // Scroll to target ayat if specified
+  useEffect(() => {
+    if (verses.length > 0 && targetAyah && flatListRef.current) {
+      const targetIndex = verses.findIndex(
+        (v) => v.id === `verse_${targetAyah}`,
+      );
+
+      if (targetIndex !== -1) {
+        setTimeout(() => {
+          flatListRef.current?.scrollToIndex({
+            index: targetIndex,
+            animated: true,
+            viewPosition: 0.2,
+          });
+        }, 100);
+      }
+    }
+  }, [verses, targetAyah]);
+
   const viewabilityConfig = useRef({
     viewAreaCoveragePercentThreshold: 50,
   }).current;
@@ -90,16 +122,22 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
       const lastVisible = viewableItems[viewableItems.length - 1];
       if (lastVisible?.item?.id && lastVisible.item.id !== "verse_0") {
         const ayahNum = parseInt(lastVisible.item.id.replace("verse_", ""), 10);
-        setLastRead({
-          type: "surah",
+        const newPosition = {
+          type: "surah" as const,
           id: surahIndex,
           surahName: surah.name,
           ayah: ayahNum,
+          surahIndex: surahIndex, // Add surah index
           timestamp: Date.now(),
-        });
+        };
+
+        // Only update if more advanced
+        if (isMoreAdvanced(newPosition, lastRead)) {
+          setLastRead(newPosition);
+        }
       }
     },
-    [surah, surahIndex, setLastRead],
+    [surah, surahIndex, setLastRead, lastRead],
   );
 
   const toggleBookmark = (ayahNum: number) => {
@@ -132,14 +170,9 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
     return <Text style={styles.error}>Surah not found</Text>;
   }
 
-  const verses = Object.entries(surah.verse).map(([key, text]) => ({
-    id: key,
-    text,
-    translation: translation?.verse[key],
-  }));
-
   return (
     <FlatList
+      ref={flatListRef}
       data={verses}
       keyExtractor={(item) => item.id}
       renderItem={({ item, index }) => {
@@ -228,6 +261,23 @@ const AyahList: React.FC<AyahListProps> = ({ surahIndex }) => {
       ]}
       onViewableItemsChanged={onViewableItemsChanged}
       viewabilityConfig={viewabilityConfig}
+      onScrollToIndexFailed={(info) => {
+        // Jump to approximate location
+        flatListRef.current?.scrollToOffset({
+          offset: info.averageItemLength * info.index,
+          animated: false,
+        });
+        // Small delay to allow rendering, then scroll to exact index
+        setTimeout(() => {
+          if (flatListRef.current) {
+            flatListRef.current.scrollToIndex({
+              index: info.index,
+              animated: true,
+              viewPosition: 0.2,
+            });
+          }
+        }, 100);
+      }}
     />
   );
 };

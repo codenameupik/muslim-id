@@ -4,6 +4,7 @@ import { Stack, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
+    Alert,
     RefreshControl,
     ScrollView,
     StyleSheet,
@@ -18,11 +19,26 @@ import { usePrayerTimes } from "../../hooks/usePrayerTimes";
 import { translations } from "../../constants/i18n";
 
 export default function Home() {
-  const { themeColor, appLanguage, lastRead, theme, khatamPlan } =
+  const { themeColor, appLanguage, lastRead, setLastRead, theme, khatamPlan } =
     useSettings();
   const router = useRouter();
   const { prayerTimes, loading, errorMsg, city, refreshing, refresh } =
     usePrayerTimes();
+
+  const handleRestart = () => {
+    Alert.alert(
+      "Reset Progress",
+      "Apakah Anda yakin ingin menghapus progress membaca?",
+      [
+        { text: "Batal", style: "cancel" },
+        {
+          text: "Ya, Hapus",
+          style: "destructive",
+          onPress: () => setLastRead(null),
+        },
+      ],
+    );
+  };
   const t = translations[appLanguage];
   const [prayerState, setPrayerState] = useState<{
     current: { name: string; time: string } | null;
@@ -295,46 +311,82 @@ export default function Home() {
             )}
           </TouchableOpacity>
 
-          {lastRead && (
-            <TouchableOpacity
-              style={[
-                styles.continueCard,
-                { backgroundColor: theme.card, shadowColor: theme.text },
-              ]}
-              onPress={() => {
-                if (lastRead.type === "surah") {
-                  router.push(`/surah/${lastRead.id}`);
-                } else {
-                  router.push(`/juz/${lastRead.id}`);
-                }
-              }}
-              activeOpacity={0.8}
-            >
-              <View style={styles.continueCardContent}>
-                <View
-                  style={[
-                    styles.continueIcon,
-                    { backgroundColor: themeColor + "15" },
-                  ]}
-                >
-                  <Ionicons name="book-outline" size={24} color={themeColor} />
-                </View>
-                <View style={styles.continueInfo}>
-                  <Text style={styles.continueLabel}>
-                    {t.home.continueReading}
-                  </Text>
-                  <Text style={[styles.continueSurah, { color: theme.text }]}>
-                    {lastRead.surahName}
-                  </Text>
+          <TouchableOpacity
+            style={[
+              styles.continueCard,
+              { backgroundColor: theme.card, shadowColor: theme.text },
+            ]}
+            onPress={() => {
+              if (!lastRead) {
+                router.push("/surah/1");
+                return;
+              }
+              if (lastRead.type === "surah") {
+                router.push(
+                  `/surah/${lastRead.id}?surahIndex=${lastRead.id}&ayah=${lastRead.ayah}`,
+                );
+              } else {
+                // Pass surahIndex and ayah as query parameters for juz
+                router.push(
+                  `/juz/${lastRead.id}?surahIndex=${lastRead.surahIndex}&ayah=${lastRead.ayah}`,
+                );
+              }
+            }}
+            activeOpacity={0.8}
+          >
+            <View style={styles.continueCardContent}>
+              <View
+                style={[
+                  styles.continueIcon,
+                  { backgroundColor: themeColor + "15" },
+                ]}
+              >
+                <Ionicons name="book-outline" size={24} color={themeColor} />
+              </View>
+              <View style={styles.continueInfo}>
+                <Text style={styles.continueLabel}>
+                  {t.home.continueReading}
+                </Text>
+                {lastRead ? (
+                  <>
+                    <Text style={[styles.continueSurah, { color: theme.text }]}>
+                      {lastRead.surahName}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.continueAyah,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      {t.home.lastReadAt} {lastRead.ayah}
+                    </Text>
+                  </>
+                ) : (
                   <Text
                     style={[
-                      styles.continueAyah,
+                      styles.emptyStateText,
                       { color: theme.textSecondary },
                     ]}
                   >
-                    {t.home.lastReadAt} {lastRead.ayah}
+                    Mulai membaca Quran
                   </Text>
-                </View>
+                )}
+              </View>
+              <View style={styles.continueActions}>
+                {lastRead && (
+                  <TouchableOpacity
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      handleRestart();
+                    }}
+                    style={[
+                      styles.restartButton,
+                      { backgroundColor: theme.background },
+                    ]}
+                  >
+                    <Ionicons name="refresh" size={16} color={themeColor} />
+                  </TouchableOpacity>
+                )}
                 <View
                   style={[
                     styles.arrowIcon,
@@ -344,8 +396,8 @@ export default function Home() {
                   <Ionicons name="arrow-forward" size={16} color={themeColor} />
                 </View>
               </View>
-            </TouchableOpacity>
-          )}
+            </View>
+          </TouchableOpacity>
 
           <View style={styles.menuGrid}>
             <TouchableOpacity
@@ -625,6 +677,22 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
+  },
+  continueActions: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  restartButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyStateText: {
+    fontSize: 15,
+    fontFamily: Fonts.heading,
+    opacity: 0.6,
   },
   menuGrid: {
     flexDirection: "row",

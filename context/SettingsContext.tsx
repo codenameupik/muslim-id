@@ -10,6 +10,7 @@ export interface LastReadBookmark {
   id: string;
   surahName: string;
   ayah: number;
+  surahIndex?: string; // Optional surah index for juz navigation
   timestamp: number;
 }
 

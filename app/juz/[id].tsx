@@ -2,21 +2,22 @@ import { Ionicons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewToken,
+    ActivityIndicator,
+    FlatList,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    ViewToken,
 } from "react-native";
 import juzInfo from "../../assets/quran/juz.json";
 import surahMap from "../../assets/quran/map";
 import enMap from "../../assets/quran/translation/en/map";
 import idMap from "../../assets/quran/translation/id/map";
 import { useSettings } from "../../context/SettingsContext";
+import { isMoreAdvanced } from "../../utils/quranUtils";
 
 interface VerseItem {
   id: string;
@@ -29,18 +30,24 @@ interface VerseItem {
 }
 
 export default function JuzDetail() {
-  const { id } = useLocalSearchParams();
+  const {
+    id,
+    surahIndex: targetSurahIndex,
+    ayah: targetAyah,
+  } = useLocalSearchParams();
   const juzIndex = Array.isArray(id) ? id[0] : id;
   const router = useRouter();
   const [verses, setVerses] = useState<VerseItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showSelector, setShowSelector] = useState(false);
+  const flatListRef = useRef<FlatList>(null);
   const {
     themeColor,
     language,
     arabicFontSize,
     translationFontSize,
     setLastRead,
+    lastRead,
     isBookmarked,
     addBookmark,
     removeBookmark,
@@ -120,6 +127,33 @@ export default function JuzDetail() {
     }
   }, [juzIndex, language]);
 
+  // Scroll to target ayat if specified in URL params
+  useEffect(() => {
+    if (
+      verses.length > 0 &&
+      targetSurahIndex &&
+      targetAyah &&
+      flatListRef.current
+    ) {
+      const targetIndex = verses.findIndex(
+        (v) =>
+          v.type === "verse" &&
+          v.surahIndex === targetSurahIndex &&
+          v.verseNumber === parseInt(targetAyah as string, 10),
+      );
+
+      if (targetIndex !== -1) {
+        setTimeout(() => {
+          flatListRef.current?.scrollToIndex({
+            index: targetIndex,
+            animated: true,
+            viewPosition: 0.2,
+          });
+        }, 100);
+      }
+    }
+  }, [verses, targetSurahIndex, targetAyah]);
+
   const viewabilityConfig = useRef({
     viewAreaCoveragePercentThreshold: 50,
   }).current;
@@ -131,18 +165,24 @@ export default function JuzDetail() {
       for (let i = viewableItems.length - 1; i >= 0; i--) {
         const item = viewableItems[i].item;
         if (item && item.type === "verse" && item.verseNumber) {
-          setLastRead({
-            type: "juz",
+          const newPosition = {
+            type: "juz" as const,
             id: juzIndex!,
             surahName: `Juz ${juzIndex} Surah ${item.surahName}`,
             ayah: item.verseNumber,
+            surahIndex: item.surahIndex,
             timestamp: Date.now(),
-          });
+          };
+
+          // Only update if more advanced
+          if (isMoreAdvanced(newPosition, lastRead)) {
+            setLastRead(newPosition);
+          }
           break;
         }
       }
     },
-    [juzIndex, setLastRead],
+    [juzIndex, setLastRead, lastRead],
   );
 
   const toggleBookmark = (item: VerseItem) => {
@@ -188,6 +228,7 @@ export default function JuzDetail() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Stack.Screen options={{ title: `Juz ${juzIndex}` }} />
       <FlatList
+        ref={flatListRef}
         data={verses}
         keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => {
@@ -273,6 +314,23 @@ export default function JuzDetail() {
         ]}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
+        onScrollToIndexFailed={(info) => {
+          // Jump to approximate location
+          flatListRef.current?.scrollToOffset({
+            offset: info.averageItemLength * info.index,
+            animated: false,
+          });
+          // Small delay to allow rendering, then scroll to exact index
+          setTimeout(() => {
+            if (flatListRef.current) {
+              flatListRef.current.scrollToIndex({
+                index: info.index,
+                animated: true,
+                viewPosition: 0.2,
+              });
+            }
+          }, 100);
+        }}
         ListFooterComponent={() => (
           <View style={styles.footer}>
             <View style={styles.navigationButtons}>
