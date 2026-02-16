@@ -22,6 +22,12 @@ export const translations = {
       lastReadAt: "Last read at Ayah",
       khatamPlanner: "Khatam Planner",
       khatamJourney: "Khatam Journey",
+      startReading: "Start reading Quran",
+      resetProgress: "Reset Progress",
+      resetConfirmMsg: "Are you sure you want to delete your reading progress?",
+    },
+    juz: {
+      selectJuz: "Select Juz",
     },
     khatam: {
       setupTitle: "New Khatam Plan",
@@ -119,6 +125,12 @@ export const translations = {
       lastReadAt: "Ayat",
       khatamPlanner: "Target Khatam",
       khatamJourney: "Riwayat Khatam",
+      startReading: "Mulai membaca Quran",
+      resetProgress: "Reset Progress",
+      resetConfirmMsg: "Apakah Anda yakin ingin menghapus progress membaca?",
+    },
+    juz: {
+      selectJuz: "Pilih Juz",
     },
     khatam: {
       setupTitle: "Target Khatam Baru",

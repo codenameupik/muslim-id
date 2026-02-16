@@ -16,6 +16,7 @@ import juzInfo from "../../assets/quran/juz.json";
 import surahMap from "../../assets/quran/map";
 import enMap from "../../assets/quran/translation/en/map";
 import idMap from "../../assets/quran/translation/id/map";
+import { translations } from "../../constants/i18n";
 import { useSettings } from "../../context/SettingsContext";
 import { isMoreAdvanced } from "../../utils/quranUtils";
 
@@ -42,6 +43,7 @@ export default function JuzDetail() {
   const [showSelector, setShowSelector] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const {
+    appLanguage,
     themeColor,
     language,
     arabicFontSize,
@@ -53,6 +55,8 @@ export default function JuzDetail() {
     removeBookmark,
     theme,
   } = useSettings();
+
+  const t = translations[appLanguage];
 
   useEffect(() => {
     const loadJuzContent = async () => {
@@ -405,7 +409,7 @@ export default function JuzDetail() {
           >
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, { color: theme.text }]}>
-                Pilih Juz
+                {t.juz.selectJuz}
               </Text>
               <TouchableOpacity onPress={() => setShowSelector(false)}>
                 <Ionicons name="close" size={24} color={theme.text} />

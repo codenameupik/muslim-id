@@ -26,18 +26,14 @@ export default function Home() {
     usePrayerTimes();
 
   const handleRestart = () => {
-    Alert.alert(
-      "Reset Progress",
-      "Apakah Anda yakin ingin menghapus progress membaca?",
-      [
-        { text: "Batal", style: "cancel" },
-        {
-          text: "Ya, Hapus",
-          style: "destructive",
-          onPress: () => setLastRead(null),
-        },
-      ],
-    );
+    Alert.alert(t.home.resetProgress, t.home.resetConfirmMsg, [
+      { text: t.common.cancel, style: "cancel" },
+      {
+        text: t.common.delete,
+        style: "destructive",
+        onPress: () => setLastRead(null),
+      },
+    ]);
   };
   const t = translations[appLanguage];
   const [prayerState, setPrayerState] = useState<{
