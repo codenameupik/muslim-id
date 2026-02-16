@@ -318,7 +318,7 @@ export default function Home() {
             ]}
             onPress={() => {
               if (!lastRead) {
-                router.push("/surah/1");
+                router.push("/juz/1");
                 return;
               }
               if (lastRead.type === "surah") {
